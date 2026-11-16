@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>КЕНТЫ: неоновая ночь</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="КЕНТЫ">
+<meta name="theme-color" content="#12061f">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="apple-touch-icon" href="./icons/icon-180.png">
+<link rel="icon" type="image/png" href="./icons/icon-192.png">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;overflow:hidden;background:#12061f;color:#fff;font-family:'Press Start 2P',ui-monospace,Menlo,monospace;
+  -webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:none;overscroll-behavior:none}
+#c{position:fixed;top:0;right:0;bottom:0;left:0;width:100%;height:100%;display:block}
+#touch{position:fixed;top:0;right:0;bottom:0;left:0;z-index:2;touch-action:none}
+.hud{position:fixed;z-index:3;pointer-events:none;text-shadow:2px 2px 0 #000,0 0 12px rgba(255,60,170,.8)}
+#tl{left:12px;top:10px;font-size:10px;line-height:1.9}
+#tr{right:12px;top:10px;font-size:10px;line-height:1.9;text-align:right}
+#hp{font-size:16px;color:#ff3f6c;letter-spacing:3px}
+#wpn{color:#ffe14d}
+#score{font-size:14px;color:#3ff3ff}
+#combo{color:#ffe14d;min-height:1em}
+#mate{color:#ff7ad1}
+#banner{left:0;right:0;top:22%;text-align:center;font-size:18px;line-height:1.7;color:#fff;opacity:0;transition:opacity .25s;padding:0 12px}
+#banner small{display:block;font-size:10px;color:#ffe14d;margin-top:8px}
+#dead{top:0;right:0;bottom:0;left:0;display:none;align-items:center;justify-content:center;flex-direction:column;background:rgba(120,0,30,.35);font-size:20px;text-align:center;line-height:1.8}
+#dead small{font-size:10px;color:#ffe14d}
+#hit{position:fixed;top:0;right:0;bottom:0;left:0;z-index:3;pointer-events:none;background:radial-gradient(transparent 40%,rgba(255,0,60,.75));opacity:0}
+.stick{position:fixed;z-index:3;pointer-events:none;width:120px;height:120px;margin:-60px 0 0 -60px;border-radius:50%;border:3px solid rgba(255,255,255,.35);display:none}
+.stick i{position:absolute;left:50%;top:50%;width:52px;height:52px;margin:-26px 0 0 -26px;border-radius:50%;background:rgba(255,255,255,.4)}
+#sR{border-color:rgba(255,63,164,.6)} #sR i{background:rgba(255,63,164,.6)}
+.btn{position:fixed;z-index:4;font:inherit;color:#fff;border:3px solid #fff;background:rgba(20,6,40,.7);border-radius:10px;padding:12px 10px;font-size:10px}
+#pick{right:16px;bottom:46%;display:none;border-color:#ffe14d;color:#ffe14d}
+#mute{right:12px;top:100px;padding:8px;font-size:9px;opacity:.7}
+#arrow{position:fixed;z-index:3;pointer-events:none;width:0;height:0;border-left:11px solid transparent;border-right:11px solid transparent;border-bottom:22px solid #ff7ad1;display:none;filter:drop-shadow(0 0 6px #ff3fa4)}
+#menu{padding-top:env(safe-area-inset-top,0px);position:fixed;top:0;right:0;bottom:0;left:0;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:16px;text-align:center;
+  background:linear-gradient(180deg,#2a0845 0%,#ff2e88 55%,#ffb347 100%)}
+#menu h1{margin:0;font-size:clamp(30px,9vw,64px);color:#fff;text-shadow:4px 4px 0 #3ff3ff,-3px -3px 0 #ff2e88,0 0 30px #ff2e88;transform:rotate(-4deg)}
+#menu h2{margin:0;font-size:11px;color:#ffe14d;text-shadow:2px 2px 0 #000}
+#nick{font:inherit;font-size:12px;padding:12px;width:min(280px,80vw);text-align:center;border:3px solid #fff;border-radius:10px;background:rgba(20,6,40,.75);color:#fff;-webkit-user-select:text;user-select:text;touch-action:auto}
+#play{font:inherit;font-size:16px;padding:16px 26px;border:4px solid #fff;border-radius:12px;background:#12061f;color:#3ff3ff;box-shadow:6px 6px 0 #3ff3ff}
+#play:disabled{opacity:.5}
+#net{font-size:9px;line-height:1.8;color:#fff;text-shadow:2px 2px 0 #000;max-width:520px}
+#how{font-size:8px;line-height:2;color:#fff;opacity:.9;text-shadow:1px 1px 0 #000;max-width:520px}
+#credits{position:fixed;top:0;right:0;bottom:0;left:0;z-index:20;background:#12061f;display:none;overflow:auto;padding:18px;font:12px/1.7 system-ui,sans-serif;touch-action:auto}
+#credits a{color:#3ff3ff} #credits h3{font-family:'Press Start 2P',monospace;font-size:12px;color:#ffe14d}
+#cb{font:inherit;font-size:8px;color:#fff;background:none;border:0;text-decoration:underline;padding:8px}
+#rot{display:none;font-size:8px;color:#12061f;background:#ffe14d;padding:8px 10px;border-radius:8px}
+@media (orientation:portrait){#rot{display:block}}
+
+#coins{color:#ffe14d}
+#toast{left:0;right:0;bottom:92px;text-align:center;font-size:10px;color:#ffe14d;opacity:0;transition:opacity .25s}
+#bars{left:50%;top:10px;width:min(40vw,300px);margin-left:calc(min(40vw,300px)/-2);display:none}
+.bar{position:relative;height:16px;border:2px solid #fff;background:rgba(0,0,0,.55);margin-bottom:6px;border-radius:4px;overflow:hidden}
+.bar i{position:absolute;left:0;top:0;bottom:0;width:100%;background:#35d07f}
+.bar b{position:absolute;top:0;right:0;bottom:0;left:0;font-size:8px;line-height:13px;text-align:center;font-weight:normal}
+.bar.boss{display:none;border-color:#ff5a3c}.bar.boss i{background:#e0322a}
+#slots{position:fixed;z-index:4;left:50%;bottom:10px;transform:translateX(-50%);display:none;gap:8px}
+.slot{width:86px;height:50px;border:3px solid rgba(255,255,255,.45);border-radius:10px;background:rgba(15,8,30,.72);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-size:7px;touch-action:none}
+.slot.on{border-color:#ffe14d;box-shadow:0 0 14px #ffe14d}
+.slot.empty{opacity:.55}
+.slot em{font-style:normal;color:#ffe14d;font-size:9px;min-height:9px}
+#act{right:16px;bottom:44%;display:none;border-color:#ffe14d;color:#ffe14d}
+#menuB{right:12px;top:140px;padding:8px 11px;font-size:12px;opacity:.7}
+.ov{position:fixed;top:0;right:0;bottom:0;left:0;z-index:15;display:none;align-items:center;justify-content:center;background:rgba(8,3,18,.72);padding:12px}
+.panel{background:#1a0d2e;border:3px solid #fff;border-radius:14px;padding:14px;width:min(430px,94vw);max-height:92vh;overflow:auto;display:flex;flex-direction:column;gap:9px;touch-action:pan-y;box-shadow:6px 6px 0 #ff2e88}
+.panel h3{margin:0;font-size:13px;color:#3ff3ff;text-align:center}
+.note{font-size:8px;line-height:1.8;color:#ffe14d;text-align:center}
+.mbtn{font:inherit;font-size:9px;line-height:1.5;color:#fff;border:2px solid #fff;background:#12061f;border-radius:9px;padding:11px 9px}
+.mbtn.buy{color:#ffe14d;border-color:#ffe14d}.mbtn.off{opacity:.45}.mbtn.join{color:#3ff3ff;border-color:#3ff3ff}
+#shopL,#modesL,#pauseL,#rooms{display:flex;flex-direction:column;gap:8px}
+.srow{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:9px;padding:4px 4px 4px 8px;border-radius:9px}
+.srow.on{background:rgba(63,243,255,.16)}
+.srow .mbtn{min-width:104px}
+.big{font:inherit;font-size:14px;padding:15px 20px;border:4px solid #fff;border-radius:12px;background:#12061f;color:#3ff3ff;box-shadow:6px 6px 0 #3ff3ff}
+.big:disabled,.mbtn:disabled{opacity:.5}
+.row{display:flex;gap:8px;align-items:stretch}
+#code{font:inherit;font-size:12px;width:96px;text-align:center;border:3px solid #fff;border-radius:10px;background:rgba(20,6,40,.75);color:#fff;-webkit-user-select:text;user-select:text;touch-action:auto}
+#menu{gap:11px;overflow:auto}
+.shopov{background:none;align-items:stretch;justify-content:flex-start;padding:8px;pointer-events:none}
+.shopov>*{pointer-events:auto}
+.panel.side{width:min(210px,44vw);max-height:100%;padding:10px;gap:7px;background:rgba(26,13,46,.9)}
+.sk{display:flex;justify-content:space-between;align-items:center;gap:6px;text-align:left;font-size:8px;padding:10px 8px}
+.sk em{font-style:normal;color:#ffe14d;white-space:nowrap}
+.sk.on{border-color:#3ff3ff;color:#3ff3ff;box-shadow:0 0 10px #3ff3ff}
+.sk.lock{opacity:.8}
+#shopR{position:absolute;right:10px;bottom:10px;width:min(210px,44vw);display:flex;flex-direction:column;gap:8px}
+#shopN{font-size:11px;line-height:1.5;text-align:center;color:#fff;text-shadow:2px 2px 0 #000,0 0 12px #ff2e88}
+#shopA{font-size:10px;padding:14px 8px}
+#menu{display:grid;justify-items:center;align-content:center;grid-auto-rows:max-content}
+.panel,#shopL,#modesL,#pauseL,#rooms,#shopR{display:grid;grid-auto-rows:max-content;align-content:start}
+#slots{display:none;grid-auto-flow:column}
+.row{display:grid;grid-auto-flow:column}
+.slot span{margin-bottom:6px}
+#tl{left:calc(12px + env(safe-area-inset-left,0px))}
+#tr{right:calc(12px + env(safe-area-inset-right,0px))}
+#mute,#menuB,#act{right:calc(12px + env(safe-area-inset-right,0px))}
+#slots{bottom:calc(10px + env(safe-area-inset-bottom,0px))}
+.shopov{padding-left:calc(8px + env(safe-area-inset-left,0px))}
+#shopR{right:calc(10px + env(safe-area-inset-right,0px));bottom:calc(10px + env(safe-area-inset-bottom,0px))}
+canvas{touch-action:none}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="touch"></div>
+<div id="hit"></div>
+<div class="hud" id="tl"><div id="lvl"></div><div id="hp"></div><div id="wpn"></div><div id="coins">◎ 0</div></div>
+<div class="hud" id="tr"><div id="score"></div><div id="combo"></div><div id="mate"></div></div>
+<div class="hud" id="bars"><div class="bar"><i id="coreF"></i><b>ДОМ</b></div><div class="bar boss" id="bossB"><i id="bossF"></i><b>БОСС</b></div></div>
+<div class="hud" id="banner"></div>
+<div class="hud" id="toast"></div>
+<div class="hud" id="dead"><div id="deadT">ТЕБЯ ЗАВАЛИЛИ</div><small id="deadS"></small></div>
+<div class="stick" id="sL"><i></i></div><div class="stick" id="sR"><i></i></div>
+<div id="arrow"></div>
+<div id="slots"><div class="slot" id="s0"><span></span><em></em></div><div class="slot" id="s1"><span></span><em></em></div><div class="slot" id="s2"><span></span><em></em></div></div>
+<button class="btn" id="act">ВЗЯТЬ</button>
+<button class="btn" id="mute">ЗВУК</button>
+<button class="btn" id="menuB">≡</button>
+<div class="ov shopov" id="shop"><div class="panel side"><h3>ГАРДЕРОБ</h3><div class="note" id="shopC"></div><div id="shopL"></div></div><div id="shopR"><div id="shopN"></div><button class="mbtn" id="shopA"></button><button class="mbtn close">ЗАКРЫТЬ</button></div></div>
+<div class="ov" id="modes"><div class="panel"><h3>ВО ЧТО РУБИМСЯ</h3><div id="modesL"></div><button class="mbtn close">ЗАКРЫТЬ</button></div></div>
+<div class="ov" id="pause"><div class="panel"><h3>ПАУЗЫ НЕТ</h3><div id="pauseL"></div><button class="mbtn close">НАЗАД В БОЙ</button></div></div>
+<div id="menu">
+  <h1>КЕНТЫ</h1>
+  <h2>кампания · зомби · 1 на 1</h2>
+  <input id="nick" maxlength="12" placeholder="твой ник" autocomplete="off">
+  <button id="create" class="big" disabled>ГРУЗИМ…</button>
+  <div id="rooms"></div>
+  <div class="row"><input id="code" maxlength="4" inputmode="numeric" placeholder="код" autocomplete="off"><button id="joinB" class="mbtn" disabled>ВОЙТИ ПО КОДУ</button></div>
+  <div id="net">сеть: подключаюсь…</div>
+  <div id="a2hs" style="display:none;font-size:8px;line-height:1.9;color:#fff;text-shadow:1px 1px 0 #000">иконка на экран: Safari → «Поделиться» → «На экран Домой»</div>
+  <div id="rot">переверни телефон горизонтально — так удобнее</div>
+  <div id="how">левый палец — бежать · правый — целиться и валить<br>слоты внизу: тап — выбрать, свайп вверх — выбросить<br>граната/молотов: тяни правый стик — дуга, отпустил — кинул</div>
+  <button id="cb">модельки и авторы</button>
+</div>
+<div id="credits"></div>
+<script>window.KENTY_SA = true;</script>
+<script src="./vendor/peerjs.min.js"></script>
+<script type="module" src="./game.js"></script>
+<script>
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(function () {});
+(function () { var st = window.navigator.standalone || (window.matchMedia && matchMedia('(display-mode: standalone)').matches || matchMedia('(display-mode: fullscreen)').matches); if (!st) document.getElementById('a2hs').style.display = 'block'; })();
+</script>
+</body>
+</html>
