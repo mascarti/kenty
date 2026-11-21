@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0e1013">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Кентофон">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/icon-180.png">
+<link rel="icon" href="/icon-192.png">
+<title>Кентофон</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<!-- ВХОД / РЕГИСТРАЦИЯ -->
+<section id="auth" class="screen" data-mode="login" hidden>
+  <div class="auth-box">
+    <div class="logo"><span class="logo-dot"></span>КЕНТОФОН</div>
+    <p class="sub">Звони своим по ID. Без номера, без мессенджеров.</p>
+    <div class="tabs" role="tablist">
+      <button type="button" class="tab" data-mode="login">Вход</button>
+      <button type="button" class="tab" data-mode="register">Регистрация</button>
+    </div>
+    <form id="auth-form" autocomplete="on">
+      <label>Логин<input id="a-login" name="username" autocomplete="username" autocapitalize="none" spellcheck="false" required minlength="3" maxlength="24"></label>
+      <label>Пароль<input id="a-pass" name="password" type="password" autocomplete="current-password" required minlength="4"></label>
+      <label class="reg-only">Ник (как тебя видят друзья)<input id="a-nick" name="nickname" maxlength="24" placeholder="например, Тёма"></label>
+      <p id="a-err" class="err" role="alert"></p>
+      <button id="a-submit" class="btn primary" type="submit">Войти</button>
+    </form>
+  </div>
+</section>
+
+<!-- ГЛАВНЫЙ ЭКРАН -->
+<section id="main" class="screen" hidden>
+  <div id="net" class="net" hidden>Подключаюсь к серверу…</div>
+  <header class="top">
+    <div class="logo small"><span class="logo-dot"></span>КЕНТОФОН</div>
+    <button id="open-settings" class="ib ghost" aria-label="Настройки"><svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.49.49 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.48.48 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.49.49 0 0 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32a.49.49 0 0 0-.12-.61l-2.01-1.58zM12 15.6A3.6 3.6 0 1 1 12 8.4a3.6 3.6 0 0 1 0 7.2z"/></svg></button>
+  </header>
+
+  <div class="me card">
+    <span id="me-ava" class="ava lg"></span>
+    <div class="me-text">
+      <b id="me-nick"></b>
+      <span class="muted">Твой ID</span>
+      <button id="copy-id" class="my-id" aria-label="Скопировать ID"><span id="me-id"></span><svg viewBox="0 0 24 24"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg></button>
+    </div>
+    <button id="invite" class="btn soft">Позвать друга</button>
+  </div>
+
+  <form id="find" class="find card" autocomplete="off">
+    <label for="find-id" class="muted">Найти друга по ID</label>
+    <div class="find-row">
+      <input id="find-id" inputmode="numeric" pattern="[0-9 ]*" maxlength="7" placeholder="Например 482913">
+      <button class="btn primary" type="submit">Найти</button>
+    </div>
+    <div id="found"></div>
+  </form>
+
+  <h3 class="list-title">Контакты</h3>
+  <ul id="contacts" class="contacts"></ul>
+</section>
+
+<!-- НАСТРОЙКИ -->
+<dialog id="settings">
+  <form id="settings-form" method="dialog">
+    <h3>Настройки</h3>
+    <label>Ник<input id="s-nick" maxlength="24" required></label>
+    <p class="muted" id="s-login"></p>
+    <div class="row">
+      <button type="button" id="s-close" class="btn soft">Закрыть</button>
+      <button type="submit" id="s-save" class="btn primary">Сохранить</button>
+    </div>
+    <button type="button" id="logout" class="btn danger-text">Выйти из аккаунта</button>
+  </form>
+</dialog>
+
+<!-- ВХОДЯЩИЙ ЗВОНОК -->
+<section id="incoming" class="overlay" hidden>
+  <div class="i-top">
+    <span id="i-ava" class="ava xl pulse"></span>
+    <h2 id="i-nick"></h2>
+    <p id="i-type" class="muted"></p>
+  </div>
+  <div class="i-bar">
+    <div><button id="i-no" class="round red big" aria-label="Сбросить"><svg viewBox="0 0 24 24"><path d="M12 9c-1.6 0-3.15.25-4.6.72v3.1c0 .39-.23.74-.56.9-.98.49-1.87 1.12-2.66 1.85-.18.18-.43.28-.7.28-.28 0-.53-.11-.71-.29L.29 13.08a.96.96 0 0 1 0-1.41C3.34 8.78 7.46 7 12 7s8.66 1.78 11.71 4.67a.99.99 0 0 1 0 1.42l-2.48 2.48c-.18.18-.43.29-.71.29-.27 0-.52-.11-.7-.28a11.27 11.27 0 0 0-2.67-1.85.996.996 0 0 1-.56-.9v-3.1C15.15 9.25 13.6 9 12 9z"/></svg></button><span>Сбросить</span></div>
+    <div><button id="i-yes" class="round green big" aria-label="Принять"><svg viewBox="0 0 24 24"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1l-2.3 2.2z"/></svg></button><span>Принять</span></div>
+  </div>
+</section>
+
+<!-- ЭКРАН ЗВОНКА -->
+<section id="call" class="overlay" hidden>
+  <video id="r-video" autoplay playsinline muted></video>
+  <audio id="r-audio" autoplay playsinline></audio>
+  <div class="c-info">
+    <span id="c-ava" class="ava xl"></span>
+    <h2 id="c-nick"></h2>
+    <p id="c-status"></p>
+    <p id="c-note" class="note" hidden>Микрофон у друга выключен</p>
+  </div>
+  <video id="l-video" autoplay playsinline muted hidden></video>
+  <div class="c-bar">
+    <button id="c-mic" class="round glass" aria-label="Микрофон">
+      <svg class="on" viewBox="0 0 24 24"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/></svg>
+      <svg class="off" viewBox="0 0 24 24"><path d="M19 11h-1.7c0 .74-.16 1.43-.43 2.05l1.23 1.23c.56-.98.9-2.09.9-3.28zm-4.02.17V5a3 3 0 0 0-6 0v.18l5.98 5.99zM4.27 3 3 4.27l6.01 6.01V11a3 3 0 0 0 3.64 2.92l1.66 1.66c-.71.33-1.5.52-2.31.52-2.76 0-5.3-2.1-5.3-5.1H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c.91-.13 1.77-.45 2.54-.9L19.73 21 21 19.73 4.27 3z"/></svg>
+    </button>
+    <button id="c-cam" class="round glass" aria-label="Камера">
+      <svg class="on" viewBox="0 0 24 24"><path d="M17 10.5V7a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-3.5l4 4v-11l-4 4z"/></svg>
+      <svg class="off" viewBox="0 0 24 24"><path d="m21 6.5-4 4V7a1 1 0 0 0-1-1H9.82L21 17.18V6.5zM3.27 2 2 3.27 4.73 6H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12c.21 0 .39-.08.54-.18L19.73 21 21 19.73 3.27 2z"/></svg>
+    </button>
+    <button id="c-flip" class="round glass" aria-label="Сменить камеру" hidden><svg viewBox="0 0 24 24"><path d="m19 8-4 4h3a6 6 0 0 1-8.8 5.3l-1.46 1.46A8 8 0 0 0 20 12h3l-4-4zM6 12a6 6 0 0 1 8.8-5.3l1.46-1.46A8 8 0 0 0 4 12H1l4 4 4-4H6z"/></svg></button>
+    <button id="c-end" class="round red" aria-label="Завершить"><svg viewBox="0 0 24 24"><path d="M12 9c-1.6 0-3.15.25-4.6.72v3.1c0 .39-.23.74-.56.9-.98.49-1.87 1.12-2.66 1.85-.18.18-.43.28-.7.28-.28 0-.53-.11-.71-.29L.29 13.08a.96.96 0 0 1 0-1.41C3.34 8.78 7.46 7 12 7s8.66 1.78 11.71 4.67a.99.99 0 0 1 0 1.42l-2.48 2.48c-.18.18-.43.29-.71.29-.27 0-.52-.11-.7-.28a11.27 11.27 0 0 0-2.67-1.85.996.996 0 0 1-.56-.9v-3.1C15.15 9.25 13.6 9 12 9z"/></svg></button>
+  </div>
+</section>
+
+<div id="toast" class="toast" role="status" hidden></div>
+
+<script src="/socket.io/socket.io.min.js"></script>
+<script src="/app.js"></script>
+</body>
+</html>
