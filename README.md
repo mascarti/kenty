@@ -14,7 +14,7 @@
 
 Зайди на сервер (веб-консоль в панели хостинга или SSH) и выполни:
 ```
-curl -fsSL https://raw.githubusercontent.com/mascarti/kentofon/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/mascarti/kenty/kentofon/install.sh | bash
 ```
 Через пару минут скрипт напишет ссылку вида `https://123.45.67.89`, её и кидаешь Кенту.
 

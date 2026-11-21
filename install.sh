@@ -2,7 +2,7 @@
 # ─────────────────────────────────────────────────────────────
 #  КЕНТОФОН — установка на чистый VPS (Ubuntu 24.04) одной командой
 #
-#  curl -fsSL https://raw.githubusercontent.com/mascarti/kentofon/main/install.sh | bash
+#  curl -fsSL https://raw.githubusercontent.com/mascarti/kenty/kentofon/install.sh | bash
 #
 #  Ставит: сайт + сервер звонков, HTTPS (Caddy, сертификат Let's Encrypt),
 #  свой TURN-сервер (coturn), чтобы звонки проходили через любой мобильный интернет.
@@ -12,8 +12,8 @@
 # ─────────────────────────────────────────────────────────────
 set -euo pipefail
 
-REPO="${REPO:-https://github.com/mascarti/kentofon.git}"
-BRANCH="${BRANCH:-main}"
+REPO="${REPO:-https://github.com/mascarti/kenty.git}"
+BRANCH="${BRANCH:-kentofon}"
 APP_DIR=/opt/kentofon
 ENV_FILE=/etc/kentofon.env
 ARG_DOMAIN="${DOMAIN:-}"
@@ -24,14 +24,19 @@ die()  { printf '\033[1;31mОшибка: %s\033[0m\n' "$*"; exit 1; }
 
 main() {
 [ "$(id -u)" -eq 0 ] || die "запусти от root (или через sudo)"
+export HOME="${HOME:-/root}"
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$PATH"
 . /etc/os-release
 [ "${ID:-}" = ubuntu ] || warn "Проверено на Ubuntu 24.04, у тебя ${PRETTY_NAME:-неизвестная ОС} — пробую"
 
 # ---------- пакеты ----------
 say "Ставлю пакеты (node, caddy, coturn)"
 export DEBIAN_FRONTEND=noninteractive
-apt-get update -qq
-apt-get install -y -qq git curl ca-certificates openssl nodejs caddy coturn >/dev/null
+# на свежем сервере в первые минуты apt часто занят автообновлениями — ждём
+wait_apt() { for _ in $(seq 1 200); do fuser /var/lib/dpkg/lock-frontend /var/lib/dpkg/lock /var/lib/apt/lists/lock >/dev/null 2>&1 || return 0; sleep 3; done; }
+APT_OPTS=(-o DPkg::Lock::Timeout=600 -y -qq)
+for try in 1 2 3 4 5; do wait_apt; apt-get "${APT_OPTS[@]}" update && break; sleep 10; done
+for try in 1 2 3 4 5; do wait_apt; apt-get "${APT_OPTS[@]}" install git curl ca-certificates openssl psmisc nodejs caddy coturn >/dev/null && break; [ "$try" = 5 ] && die "не получилось поставить пакеты"; sleep 10; done
 NODE_MAJOR="$(node -v | sed -E 's/^v([0-9]+).*/\1/')"
 [ "$NODE_MAJOR" -ge 18 ] || die "нужен Node.js 18+, а тут $(node -v). Переустанови сервер на Ubuntu 24.04"
 
@@ -222,13 +227,14 @@ done
 echo
 if [ -n "$HTTPS_OK" ]; then
   printf '\033[1;32m✅ Кентофон работает:  https://%s\033[0m\n' "$SITE"
+  echo "https://$SITE" > /root/kentofon-url.txt
 else
   warn "Сервер запущен, но сертификат ещё не получен. Подожди пару минут и открой https://$SITE"
   warn "Если не открывается — проверь, что порты 80 и 443 открыты (файрвол в панели хостинга)."
   warn "Логи: journalctl -u caddy -n 50"
   if [ -z "$DOMAIN" ]; then
     warn "Если сертификат на IP так и не выдался — поставь через бесплатный домен:"
-    warn "curl -fsSL https://raw.githubusercontent.com/mascarti/kentofon/main/install.sh | DOMAIN=${PUBLIC_IP//./-}.sslip.io bash"
+    warn "curl -fsSL https://raw.githubusercontent.com/mascarti/kenty/kentofon/install.sh | DOMAIN=${PUBLIC_IP//./-}.sslip.io bash"
   fi
 fi
 echo "Порты, которые должны быть открыты: 80/tcp, 443/tcp, 3478/tcp+udp, 49152-65535/udp"
