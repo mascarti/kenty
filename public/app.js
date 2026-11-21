@@ -27,7 +27,7 @@
   const pendingAdd = new URLSearchParams(location.search).get('add');
   const baseTitle = document.title;
 
-  fetch('/api/ice').then((r) => r.json()).then((j) => { if (j?.iceServers) ice = j; }).catch(() => {});
+  const forceRelay = new URLSearchParams(location.search).has('relay'); // для проверки TURN
 
   // ---------- уведомления ----------
   let toastTimer;
@@ -272,6 +272,7 @@
       socket.emit('hello', { contacts: contacts.map((c) => c.id) }, (r) => {
         if (!r) return;
         me = r.me; token = r.token;
+        if (r.ice?.iceServers) ice = r.ice;
         store.set('kf_me', me); store.set('kf_token', token);
         socket.auth.token = token;
         renderMe();
@@ -279,7 +280,7 @@
         if (pendingAdd && !added) {
           added = true;
           if (pendingAdd !== me.id && !contacts.some((c) => c.id === pendingAdd)) { $('#find-id').value = pendingAdd; find(pendingAdd); }
-          history.replaceState(null, '', '/');
+          history.replaceState(null, '', forceRelay ? '/?relay' : '/');
         }
       });
     });
@@ -405,7 +406,7 @@
   });
 
   function setupPC(c) {
-    const pc = (c.pc = new RTCPeerConnection(ice));
+    const pc = (c.pc = new RTCPeerConnection({ ...ice, iceTransportPolicy: forceRelay ? 'relay' : 'all' }));
     pc.onicecandidate = (e) => { if (e.candidate) send(c, { cand: e.candidate }); };
     pc.ontrack = (e) => {
       if (!c.remote.getTracks().includes(e.track)) c.remote.addTrack(e.track);

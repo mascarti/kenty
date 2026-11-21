@@ -7,8 +7,11 @@ const fs = require('fs');
 const crypto = require('crypto');
 const { Server } = require('socket.io');
 
+// когда сервер собран в dist/kentofon.js, корень проекта — на уровень выше
+const ROOT = path.basename(__dirname) === 'dist' ? path.dirname(__dirname) : __dirname;
 const PORT = process.env.PORT || 3000;
-const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, 'data');
+const HOST = process.env.HOST || '0.0.0.0';
+const DATA_DIR = process.env.DATA_DIR || path.join(ROOT, 'data');
 const DATA_FILE = path.join(DATA_DIR, 'db.json');
 const RING_TIMEOUT = 45_000; // сколько звонит, пока не сбросится
 const LOST_GRACE = 20_000; // сколько ждём, если у человека отвалился интернет посреди звонка
@@ -86,6 +89,22 @@ function tooMany(ip) {
 }
 
 // ---------- ICE (STUN/TURN) ----------
+// Свой TURN (coturn на том же сервере): TURN_HOST + TURN_SECRET.
+// Пароли к нему одноразовые, выдаются только залогиненным, живут сутки.
+const TURN_HOST = process.env.TURN_HOST;
+const TURN_SECRET = process.env.TURN_SECRET;
+const TURN_PORT = process.env.TURN_PORT || 3478;
+function iceFor(uid) {
+  if (!TURN_HOST || !TURN_SECRET) return { iceServers };
+  const username = Math.floor(Date.now() / 1000) + 24 * 3600 + ':' + uid;
+  const credential = crypto.createHmac('sha1', TURN_SECRET).update(username).digest('base64');
+  return {
+    iceServers: [
+      { urls: `stun:${TURN_HOST}:${TURN_PORT}` },
+      { urls: [`turn:${TURN_HOST}:${TURN_PORT}?transport=udp`, `turn:${TURN_HOST}:${TURN_PORT}?transport=tcp`], username, credential },
+    ],
+  };
+}
 const iceServers = [
   { urls: ['stun:stun.l.google.com:19302', 'stun:stun1.l.google.com:19302'] },
   { urls: 'stun:stun.cloudflare.com:3478' },
@@ -102,10 +121,9 @@ if (process.env.TURN_URL) {
 const app = express();
 app.set('trust proxy', true);
 app.use(express.json({ limit: '10kb' }));
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(ROOT, 'public')));
 
 app.get('/healthz', (req, res) => res.send('ok'));
-app.get('/api/ice', (req, res) => res.json({ iceServers }));
 
 app.post('/api/register', (req, res) => {
   if (tooMany(req.ip)) return res.status(429).json({ error: 'Слишком много попыток, подожди пару минут' });
@@ -133,7 +151,7 @@ app.post('/api/login', (req, res) => {
 
 // ---------- realtime ----------
 const server = http.createServer(app);
-const io = new Server(server, { pingInterval: 20_000, pingTimeout: 20_000 });
+const io = new Server(server, { pingInterval: 20_000, pingTimeout: 20_000, serveClient: false });
 
 const online = new Map(); // userId -> Set(socketId)
 const calls = new Map(); // callId -> { id, from, to, video, state, timer }
@@ -194,7 +212,7 @@ io.on('connection', (socket) => {
     if (changed) save();
     const active = [...calls.values()].find((c) => c.state === 'ringing' && c.to === uid);
     if (active) socket.emit('call:incoming', { callId: active.id, from: { id: active.from, nick: db.users[active.from]?.nick }, video: active.video });
-    ack?.({ me: pub(me), token: makeToken(me), contacts: me.contacts.map(contactView) });
+    ack?.({ me: pub(me), token: makeToken(me), contacts: me.contacts.map(contactView), ice: iceFor(uid) });
   });
 
   socket.on('find', (data, ack) => {
@@ -291,4 +309,4 @@ io.on('connection', (socket) => {
   });
 });
 
-server.listen(PORT, () => console.log('КЕНТОФОН запущен на порту ' + PORT));
+server.listen(PORT, HOST, () => console.log(`КЕНТОФОН запущен: ${HOST}:${PORT}` + (TURN_HOST ? `, TURN ${TURN_HOST}:${TURN_PORT}` : '')));
