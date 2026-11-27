@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Кентофон</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+/* VOICE: дерзкий люкс, золото как у дорогих кнопочных телефонов
+   IDEA: сам сайт — это золотой кнопочный телефон, всё управление кнопками
+   PICTURE: корпус из полированного золота, блик пробегает по корпусу, кнопки отражают свет
+   COLOUR/TYPE: чёрный бархат, золото, янтарный ЖК-экран; Cinzel + Share Tech Mono
+   LAYOUT: телефон по центру экрана, на мобиле на всю ширину */
+:root{color-scheme:dark;
+--gold:linear-gradient(135deg,#6e4f0e 0%,#f9e08b 16%,#c99a2e 32%,#fff6cf 48%,#b8861f 62%,#f5d77a 80%,#6e4f0e 100%);
+--gold2:linear-gradient(180deg,#fff3c4 0%,#f0cc62 22%,#c4921f 55%,#8a6414 80%,#d9b04a 100%);
+--lcd:#f5d77a;--lcd2:#8f7432}
+*{box-sizing:border-box;min-width:0;-webkit-tap-highlight-color:transparent}
+body{margin:0;min-height:100vh;display:grid;place-items:center;padding:18px 10px;
+background:radial-gradient(ellipse at 50% 30%,#3a2a0a 0%,#120c03 45%,#050403 100%);
+font:16px/1.4 "Share Tech Mono",ui-monospace,monospace;color:#2b1d03;overflow-x:clip}
+.phone{position:relative;width:min(370px,94vw);padding:22px 20px 26px;border-radius:52px 52px 60px 60px;
+background:var(--gold);overflow:hidden;
+box-shadow:0 40px 80px rgba(0,0,0,.7),0 0 60px rgba(240,190,70,.18),inset 0 2px 2px rgba(255,255,255,.9),inset 0 -6px 12px rgba(80,50,5,.6),inset 6px 0 14px rgba(255,240,190,.35),inset -6px 0 14px rgba(90,60,5,.45)}
+.phone::after{content:"";position:absolute;inset:-40%;pointer-events:none;
+background:linear-gradient(115deg,transparent 42%,rgba(255,255,255,.55) 49%,rgba(255,255,255,.1) 53%,transparent 58%);
+animation:shine 5.5s ease-in-out infinite}
+@keyframes shine{0%,55%{transform:translateX(-60%)}100%{transform:translateX(60%)}}
+@media(prefers-reduced-motion:reduce){.phone::after{animation:none;opacity:0}}
+.speaker{width:70px;height:7px;margin:0 auto 10px;border-radius:9px;background:#3a2806;box-shadow:inset 0 2px 3px #000,0 1px 0 rgba(255,255,255,.7)}
+.brand{text-align:center;font:800 15px/1 Cinzel,serif;letter-spacing:.32em;color:#5a3e07;text-shadow:0 1px 0 rgba(255,250,220,.85),0 -1px 0 rgba(70,45,0,.5);margin-bottom:12px}
+.screen{position:relative;height:250px;border-radius:14px;padding:8px 12px;background:radial-gradient(ellipse at 30% 0%,#2a220f,#070604 70%);
+border:3px solid #4a3407;box-shadow:inset 0 0 22px rgba(0,0,0,.95),0 1px 0 rgba(255,255,255,.8);color:var(--lcd);display:flex;flex-direction:column;overflow:hidden}
+.screen::before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(160deg,rgba(255,255,255,.12),transparent 40%)}
+.bar{display:flex;justify-content:space-between;font-size:13px;color:var(--lcd2);border-bottom:1px solid #3a2e12;padding-bottom:3px}
+#net.on{color:#9be36b}#net.off{color:#d9553f}
+#scr{flex:1;overflow:hidden;padding-top:6px}
+.soft{display:flex;justify-content:space-between;font-size:14px;border-top:1px solid #3a2e12;padding-top:3px}
+.t{font-size:18px;margin:0 0 6px;text-shadow:0 0 6px rgba(245,215,122,.45)}
+.big{font-size:30px;letter-spacing:.08em;text-align:center;margin:10px 0;text-shadow:0 0 10px rgba(245,215,122,.5)}
+.c{text-align:center}.dim{color:var(--lcd2);font-size:13px}
+.err{color:#ff8a6b;font-size:13px;min-height:17px}
+.ls{list-style:none;margin:0;padding:0}
+.ls li{padding:5px 8px;border-radius:6px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ls li.on{background:var(--gold2);color:#2b1d03;box-shadow:0 0 10px rgba(245,215,122,.4)}
+.tabs{display:flex;gap:6px;margin-bottom:6px}.tabs span{flex:1;text-align:center;padding:3px;border-radius:6px;border:1px solid #4a3a14;cursor:pointer;font-size:14px}
+.tabs span.on{background:var(--gold2);color:#2b1d03}
+.screen input{width:100%;margin:3px 0;padding:6px 8px;font:16px "Share Tech Mono",monospace;color:var(--lcd);background:#0f0c05;border:1px solid #5a4614;border-radius:6px;outline:none}
+.screen input:focus{border-color:var(--lcd);box-shadow:0 0 8px rgba(245,215,122,.4)}
+.toast{position:absolute;left:10px;right:10px;bottom:30px;padding:6px;border-radius:8px;text-align:center;font-size:14px;background:var(--gold2);color:#2b1d03;opacity:0;transition:opacity .25s;pointer-events:none}
+.toast.on{opacity:1}
+.pulse{animation:pulse 1s ease-in-out infinite}@keyframes pulse{50%{opacity:.35}}
+.nav{display:grid;grid-template-columns:1fr 1.3fr 1fr;gap:10px;align-items:center;margin:16px 0 12px}
+.side{display:grid;gap:10px}
+.dpad{position:relative;width:118px;height:118px;margin:auto;border-radius:50%;background:var(--gold);
+box-shadow:inset 0 3px 3px rgba(255,255,255,.9),inset 0 -5px 8px rgba(70,45,0,.6),0 6px 12px rgba(0,0,0,.45)}
+.dpad button{position:absolute;width:40px;height:34px;border:0;background:transparent;color:#4a3205;font-size:14px;cursor:pointer;text-shadow:0 1px 0 rgba(255,255,255,.7)}
+.dpad [data-k=up]{top:4px;left:39px}.dpad [data-k=down]{bottom:4px;left:39px}
+.dpad [data-k=left]{left:2px;top:42px}.dpad [data-k=right]{right:2px;top:42px}
+.dpad .ok{width:52px!important;height:52px!important;left:33px;top:33px;border-radius:50%;background:var(--gold2)!important;font:800 13px Cinzel,serif!important;
+box-shadow:inset 0 2px 2px rgba(255,255,255,.95),inset 0 -3px 5px rgba(80,50,0,.6),0 2px 5px rgba(0,0,0,.5)}
+.k{position:relative;height:46px;border:0;border-radius:16px;cursor:pointer;overflow:hidden;
+background:var(--gold2);color:#3a2604;font:600 20px/1 Cinzel,serif;text-shadow:0 1px 0 rgba(255,250,220,.9);
+box-shadow:inset 0 2px 1px rgba(255,255,255,.95),inset 0 -4px 6px rgba(90,55,0,.55),0 4px 8px rgba(0,0,0,.45);transition:transform .06s}
+.k::before{content:"";position:absolute;left:10%;right:10%;top:3px;height:40%;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,.75),rgba(255,255,255,0));pointer-events:none}
+.k:active,.k.p,.dpad button:active{transform:translateY(2px);filter:brightness(.88)}
+.k small{display:block;font:10px "Share Tech Mono",monospace;letter-spacing:.1em;color:#6b4a0a;margin-top:2px}
+.k svg{width:24px;height:24px;vertical-align:middle}
+.call svg{fill:#1f8a3a}.end svg{fill:#c0281c}
+.sk{height:34px;font-size:12px}
+.pad{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.pad .k{height:50px;border-radius:22px 22px 26px 26px}
+button:focus-visible{outline:2px solid #fff6cf;outline-offset:2px}
+.foot{margin-top:14px;text-align:center;font:600 10px Cinzel,serif;letter-spacing:.3em;color:#6b4a0a;text-shadow:0 1px 0 rgba(255,255,255,.6)}
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="speaker"></div>
+  <div class="brand">KENTOFON</div>
+  <div class="screen">
+    <div class="bar"><span id="net" class="off">● сеть</span><span id="clock">--:--</span><span id="who"></span></div>
+    <div id="scr"></div>
+    <div class="soft"><span id="sl">Выбор</span><span id="sr">Назад</span></div>
+    <div class="toast" id="toast"></div>
+  </div>
+  <div class="nav">
+    <div class="side">
+      <button class="k sk" data-k="sl" aria-label="Левая кнопка">●</button>
+      <button class="k call" data-k="call" aria-label="Позвонить"><svg viewBox="0 0 24 24"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg></button>
+    </div>
+    <div class="dpad">
+      <button data-k="up" aria-label="Вверх">▲</button>
+      <button data-k="left" aria-label="Влево">◀</button>
+      <button class="ok" data-k="ok">OK</button>
+      <button data-k="right" aria-label="Вправо">▶</button>
+      <button data-k="down" aria-label="Вниз">▼</button>
+    </div>
+    <div class="side">
+      <button class="k sk" data-k="sr" aria-label="Правая кнопка">●</button>
+      <button class="k end" data-k="end" aria-label="Сбросить"><svg viewBox="0 0 24 24"><path d="M12 9c-1.6 0-3.15.25-4.6.72v3.1a1 1 0 0 1-.56.9 11.5 11.5 0 0 0-2.66 1.85 1 1 0 0 1-1.4 0L.29 13.08a1 1 0 0 1 0-1.41A16.9 16.9 0 0 1 12 7c4.5 0 8.6 1.75 11.71 4.67a1 1 0 0 1 0 1.41l-2.48 2.49a1 1 0 0 1-1.4 0 11.3 11.3 0 0 0-2.67-1.85 1 1 0 0 1-.56-.9v-3.1A14.8 14.8 0 0 0 12 9z"/></svg></button>
+    </div>
+  </div>
+  <div class="pad">
+    <button class="k" data-k="1">1<small>&nbsp;</small></button>
+    <button class="k" data-k="2">2<small>АБВГ</small></button>
+    <button class="k" data-k="3">3<small>ДЕЖЗ</small></button>
+    <button class="k" data-k="4">4<small>ИЙКЛ</small></button>
+    <button class="k" data-k="5">5<small>МНОП</small></button>
+    <button class="k" data-k="6">6<small>РСТУ</small></button>
+    <button class="k" data-k="7">7<small>ФХЦЧ</small></button>
+    <button class="k" data-k="8">8<small>ШЩЪЫ</small></button>
+    <button class="k" data-k="9">9<small>ЬЭЮЯ</small></button>
+    <button class="k" data-k="*">✱<small>удалить</small></button>
+    <button class="k" data-k="0">0<small>+</small></button>
+    <button class="k" data-k="#">#<small>&nbsp;</small></button>
+  </div>
+  <div class="foot">24K · GOLD EDITION</div>
+</div>
+<audio id="remote" autoplay playsinline></audio>
+
+<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<script>
+{
+const $=s=>document.querySelector(s);
+const scr=$('#scr');
+const PFX='kentofon-gold-v1-';
+const esc=t=>String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let store={};
+try{store=JSON.parse(localStorage.getItem('kentofon')||'{}')}catch(e){store={}}
+store.accounts=store.accounts||{};
+const save=()=>{try{localStorage.setItem('kentofon',JSON.stringify(store))}catch(e){}};
+let me=store.session&&store.accounts[store.session]?store.accounts[store.session]:null;
+const S={v:'auth',sel:0,mode:'login',digits:'',msg:'',found:null,peerNick:'',peerId:''};
+let peer=null,stream=null,call=null,callTimer=null,callStart=0,noAnswer=null,toastT=null;
+const MENU=['Контакты','Найти по ID','Мой номер','Выйти'];
+
+async function hash(s){
+  if(window.crypto&&crypto.subtle){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
+  let h=7;for(const c of s)h=(h*31+c.charCodeAt(0))|0;return 'x'+h;
+}
+function newId(){let id;do{id=String(100000+Math.floor(Math.random()*900000))}while(Object.values(store.accounts).some(a=>a.id===id));return id}
+const fmtId=id=>String(id).replace(/(\d{3})(\d{3})/,'$1 $2');
+
+function flash(t){const el=$('#toast');el.textContent=t;el.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('on'),2200)}
+function setNet(s){const n=$('#net');n.className=s==='on'?'on':'off';n.textContent=s==='on'?'● в сети':'● нет сети'}
+function soft(l,r){$('#sl').textContent=l;$('#sr').textContent=r}
+function list(items,empty){
+  if(!items.length)return `<div class="dim c" style="margin-top:30px">${empty}</div>`;
+  const start=Math.max(0,Math.min(S.sel-3,items.length-6));
+  return '<ul class="ls">'+items.slice(start,start+6).map((t,i)=>`<li data-i="${start+i}" class="${start+i===S.sel?'on':''}">${t}</li>`).join('')+'</ul>';
+}
+
+function render(){
+  const v=S.v;
+  $('#who').textContent=me?me.nick:'';
+  if(v==='auth'){
+    const reg=S.mode==='reg';
+    scr.innerHTML=`<div class="tabs"><span data-m="login" class="${reg?'':'on'}">Вход</span><span data-m="reg" class="${reg?'on':''}">Регистрация</span></div>
+      <input id="fLogin" placeholder="логин" autocomplete="username" autocapitalize="off">
+      <input id="fPass" type="password" placeholder="пароль" autocomplete="${reg?'new-password':'current-password'}">
+      ${reg?'<input id="fNick" placeholder="ник (как тебя видят)" maxlength="16">':''}
+      <div class="err" id="err">${esc(S.msg)}</div>`;
+    soft(reg?'Создать':'Войти','◀ ▶');
+  }else if(v==='menu'){
+    scr.innerHTML=`<p class="t">Меню</p>`+list(MENU.map(esc),'');
+    soft('Выбор','');
+  }else if(v==='contacts'){
+    const cs=me.contacts;
+    scr.innerHTML=`<p class="t">Контакты</p>`+list(cs.map(c=>`${esc(c.nick)} <span class="dim">${fmtId(c.id)}</span>`),'Пусто.<br>Найди кента по ID');
+    soft(cs.length?'Позвонить':'','Назад');
+  }else if(v==='find'){
+    const f=S.found;
+    scr.innerHTML=`<p class="t">Найти по ID</p><div class="big">${(fmtId(S.digits)||'')}<span class="pulse">_</span></div>
+      ${f?`<div class="c">Найден: <b>${esc(f.nick)}</b><br><span class="dim">OK — добавить в контакты</span></div>`:`<div class="c dim ${S.msg==='Ищу…'?'pulse':''}">${esc(S.msg||'Набери 6 цифр и жми OK')}</div>`}`;
+    soft(f?'Добавить':'Искать',S.digits?'Стереть':'Назад');
+  }else if(v==='profile'){
+    scr.innerHTML=`<p class="t">Мой номер</p><div class="big">${fmtId(me.id)}</div>
+      <div class="c">${esc(me.nick)}</div><div class="c dim">логин: ${esc(me.login)}<br>Скинь этот ID Кенту</div>`;
+    soft('OK','Назад');
+  }else if(v==='calling'){
+    scr.innerHTML=`<div class="c" style="margin-top:28px"><div class="dim pulse">Вызов…</div><div class="big">${esc(S.peerNick)}</div><div class="dim">${fmtId(S.peerId)}</div></div>`;
+    soft('','Сброс');
+  }else if(v==='incoming'){
+    scr.innerHTML=`<div class="c" style="margin-top:22px"><div class="pulse">Входящий звонок</div><div class="big">${esc(S.peerNick)}</div><div class="dim">${fmtId(S.peerId)}<br>зелёная — ответить, красная — сбросить</div></div>`;
+    soft('Ответить','Сброс');
+  }else if(v==='incall'){
+    scr.innerHTML=`<div class="c" style="margin-top:28px"><div class="dim">На связи</div><div class="big">${esc(S.peerNick)}</div><div class="big" id="timer" style="font-size:22px">00:00</div></div>`;
+    soft('','Сброс');
+  }
+}
+
+async function auth(){
+  const err=t=>{S.msg=t;$('#err').textContent=t};
+  const L=($('#fLogin').value||'').trim().toLowerCase(),P=$('#fPass').value||'';
+  if(L.length<3||P.length<4)return err('Логин от 3, пароль от 4 символов');
+  const h=await hash(L+':'+P);
+  if(S.mode==='reg'){
+    const N=(($('#fNick')||{}).value||'').trim().slice(0,16);
+    if(!N)return err('Придумай ник');
+    if(store.accounts[L])return err('Логин уже занят');
+    store.accounts[L]={login:L,hash:h,nick:N,id:newId(),contacts:[]};
+  }else{
+    const a=store.accounts[L];
+    if(!a||a.hash!==h)return err('Неверный логин или пароль');
+  }
+  store.session=L;save();me=store.accounts[L];S.msg='';
+  go(S.mode==='reg'?'profile':'menu');startPeer();
+}
+function logout(){if(peer){peer.destroy();peer=null}delete store.session;save();me=null;setNet('off');S.mode='login';go('auth')}
+
+function addContact(id,nick,silent){
+  const ex=me.contacts.find(c=>c.id===id);
+  if(ex){ex.nick=nick}else{me.contacts.push({id,nick});if(silent)flash(nick+' добавил тебя')}
+  save();
+}
+
+function startPeer(){
+  if(peer){peer.destroy();peer=null}
+  if(typeof Peer==='undefined'){setNet('off');flash('Нет интернета');return}
+  peer=new Peer(PFX+me.id);
+  peer.on('open',()=>setNet('on'));
+  peer.on('disconnected',()=>{setNet('off');setTimeout(()=>{if(peer&&!peer.destroyed)peer.reconnect()},2500)});
+  peer.on('error',e=>{
+    if(e.type==='peer-unavailable'){
+      if(S.v==='find'){S.found=null;S.msg='Не найден или не в сети';render()}
+      if(S.v==='calling')endCall('Кент не в сети');
+    }else if(e.type==='unavailable-id'){flash('Ты уже открыт в другой вкладке')}
+    else if(e.type==='network'||e.type==='server-error'||e.type==='socket-error'){setNet('off')}
+  });
+  peer.on('connection',c=>{
+    c.on('data',d=>{if(d&&d.t==='hi'){c.send({t:'me',nick:me.nick,id:me.id});addContact(String(d.id).slice(0,6),String(d.nick).slice(0,16),true)}});
+  });
+  peer.on('call',c=>{
+    if(call){c.close();return}
+    call=c;const m=c.metadata||{};
+    S.peerNick=String(m.nick||'Неизвестный').slice(0,16);S.peerId=String(m.id||'').slice(0,6);
+    go('incoming');ringStart();
+    c.on('close',()=>endCall('Звонок завершён'));
+  });
+}
+
+function search(){
+  const id=S.digits;
+  if(id.length!==6){S.msg='ID — это 6 цифр';return render()}
+  if(id===me.id){S.msg='Это твой же ID, братан';return render()}
+  if(!peer||!peer.open){S.msg='Нет сети';return render()}
+  S.found=null;S.msg='Ищу…';render();
+  const c=peer.connect(PFX+id,{reliable:true});
+  const to=setTimeout(()=>{if(!S.found&&S.v==='find'&&S.msg==='Ищу…'){S.msg='Не найден или не в сети';render()}try{c.close()}catch(e){}},9000);
+  c.on('open',()=>c.send({t:'hi',nick:me.nick,id:me.id}));
+  c.on('data',d=>{if(d&&d.t==='me'){clearTimeout(to);S.found={id:String(d.id).slice(0,6),nick:String(d.nick).slice(0,16)};S.msg='';if(S.v==='find')render();setTimeout(()=>c.close(),800)}});
+}
+
+async function getMic(){if(!stream)stream=await navigator.mediaDevices.getUserMedia({audio:true});return stream}
+function hookCall(c){
+  c.on('stream',rs=>{
+    const a=$('#remote');a.srcObject=rs;a.play().catch(()=>{});
+    ringStop();clearTimeout(noAnswer);
+    if(S.v!=='incall'){callStart=Date.now();go('incall');clearInterval(callTimer);callTimer=setInterval(tick,1000)}
+  });
+  c.on('close',()=>endCall('Звонок завершён'));
+  c.on('error',()=>endCall('Ошибка связи'));
+}
+async function dial(ct){
+  if(!peer||!peer.open)return flash('Нет сети');
+  S.peerNick=ct.nick;S.peerId=ct.id;go('calling');
+  try{await getMic()}catch(e){go('contacts');return flash('Дай доступ к микрофону')}
+  if(S.v!=='calling')return;
+  call=peer.call(PFX+ct.id,stream,{metadata:{nick:me.nick,id:me.id}});
+  hookCall(call);
+  noAnswer=setTimeout(()=>{if(S.v==='calling')endCall('Не отвечает')},40000);
+}
+async function accept(){
+  ringStop();
+  try{await getMic()}catch(e){endCall('Дай доступ к микрофону');return}
+  if(!call)return;
+  call.answer(stream);hookCall(call);
+}
+function endCall(m){
+  if(!['calling','incoming','incall'].includes(S.v))return;
+  S.v='contacts';S.sel=0;
+  const c=call;call=null;
+  clearInterval(callTimer);clearTimeout(noAnswer);ringStop();
+  if(c)try{c.close()}catch(e){}
+  $('#remote').srcObject=null;
+  if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}
+  render();flash(m);
+}
+function tick(){const t=$('#timer');if(!t)return;const s=Math.floor((Date.now()-callStart)/1000);t.textContent=String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')}
+
+/* звуки: клик кнопок и рингтон */
+let ac=null;
+function beep(f,d,vol){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain();o.type='triangle';o.frequency.value=f;g.gain.value=vol||.04;o.connect(g);g.connect(ac.destination);o.start();g.gain.exponentialRampToValueAtTime(.0001,ac.currentTime+d);o.stop(ac.currentTime+d)}catch(e){}}
+let ringI=null;
+function ringStart(){ringStop();const r=()=>{beep(880,.25,.12);setTimeout(()=>beep(1175,.3,.12),280)};r();ringI=setInterval(r,1600)}
+function ringStop(){clearInterval(ringI);ringI=null}
+
+function go(v){S.v=v;S.sel=0;if(v==='find'){S.digits='';S.found=null;S.msg=''}render()}
+function move(d,n){if(!n)return;S.sel=(S.sel+d+n)%n;render()}
+
+function key(k){
+  const v=S.v;
+  if(v==='auth'){
+    if(k==='left'||k==='right'||k==='sr'){S.mode=S.mode==='login'?'reg':'login';S.msg='';render()}
+    else if(k==='ok'||k==='sl'||k==='call')auth();
+    return;
+  }
+  if(v==='incoming'){if(k==='call'||k==='ok'||k==='sl')accept();else if(k==='end'||k==='sr'){endCall('Сброшено')}return}
+  if(v==='calling'||v==='incall'){if(k==='end'||k==='sr')endCall('Сброшено');return}
+  if(k==='end'){go('menu');return}
+  if(v==='menu'){
+    if(k==='up')move(-1,MENU.length);else if(k==='down')move(1,MENU.length);
+    else if(k==='ok'||k==='sl'){[()=>go('contacts'),()=>go('find'),()=>go('profile'),logout][S.sel]()}
+    else if(/^[1-4]$/.test(k)){S.sel=+k-1;key('ok')}
+  }else if(v==='contacts'){
+    const n=me.contacts.length;
+    if(k==='up')move(-1,n);else if(k==='down')move(1,n);
+    else if((k==='ok'||k==='sl'||k==='call')&&n)dial(me.contacts[S.sel]);
+    else if(k==='*'&&n){const c=me.contacts.splice(S.sel,1)[0];save();S.sel=0;render();flash(c.nick+' удалён')}
+    else if(k==='sr')go('menu');
+  }else if(v==='find'){
+    if(/^\d$/.test(k)&&S.digits.length<6){S.digits+=k;S.found=null;S.msg='';render()}
+    else if(k==='sr'||k==='*'){if(S.digits){S.digits=S.digits.slice(0,-1);S.found=null;S.msg='';render()}else go('menu')}
+    else if(k==='ok'||k==='sl'||k==='call'){
+      if(S.found){addContact(S.found.id,S.found.nick);flash(S.found.nick+' в контактах');go('contacts')}else search();
+    }
+  }else if(v==='profile'){if(k==='ok'||k==='sl'||k==='sr')go('menu')}
+}
+
+document.querySelectorAll('[data-k]').forEach(b=>b.addEventListener('click',()=>{beep(1400,.06);key(b.dataset.k)}));
+scr.addEventListener('click',e=>{
+  const li=e.target.closest('li[data-i]');if(li){S.sel=+li.dataset.i;key('ok');return}
+  const m=e.target.closest('[data-m]');if(m&&m.dataset.m!==S.mode){S.mode=m.dataset.m;S.msg='';render()}
+});
+const KEYMAP={ArrowUp:'up',ArrowDown:'down',ArrowLeft:'left',ArrowRight:'right',Enter:'ok',Escape:'sr',Backspace:'sr'};
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT'){if(e.key==='Enter'){e.preventDefault();auth()}return}
+  const k=KEYMAP[e.key]||(/^[\d*#]$/.test(e.key)?e.key:null);
+  if(!k)return;e.preventDefault();
+  const b=document.querySelector(`[data-k="${k}"]`);if(b){b.classList.add('p');setTimeout(()=>b.classList.remove('p'),120)}
+  key(k);
+});
+const clock=()=>{const d=new Date();$('#clock').textContent=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')};
+clock();setInterval(clock,15000);
+
+if(me){go('menu');startPeer()}else render();
+}
+</script>
+</body>
+</html>
