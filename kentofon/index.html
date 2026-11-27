@@ -173,7 +173,7 @@ function render(){
   }else if(v==='find'){
     const f=S.found;
     scr.innerHTML=`<p class="t">Найти по ID</p><div class="big">${(fmtId(S.digits)||'')}<span class="pulse">_</span></div>
-      ${f?`<div class="c">Найден: <b>${esc(f.nick)}</b><br><span class="dim">OK — добавить в контакты</span></div>`:`<div class="c dim ${S.msg==='Ищу…'?'pulse':''}">${esc(S.msg||'Набери 6 цифр и жми OK')}</div>`}`;
+      ${f?`<div class="c">${f.weak?'В сети':'Найден: <b>'+esc(f.nick)+'</b>'}<br><span class="dim">OK — добавить в контакты</span></div>`:`<div class="c dim ${S.msg==='Ищу…'?'pulse':''}">${esc(S.msg||'Набери 6 цифр и жми OK')}</div>`}`;
     soft(f?'Добавить':'Искать',S.digits?'Стереть':'Назад');
   }else if(v==='profile'){
     scr.innerHTML=`<p class="t">Мой номер</p><div class="big">${fmtId(me.id)}</div>
@@ -221,13 +221,13 @@ function startPeer(){
   if(typeof Peer==='undefined'){setNet('off');flash('Нет интернета');return}
   peer=new Peer(PFX+me.id);
   peer.on('open',()=>setNet('on'));
-  peer.on('disconnected',()=>{setNet('off');setTimeout(()=>{if(peer&&!peer.destroyed)peer.reconnect()},2500)});
+  peer.on('disconnected',()=>{setNet('off');setTimeout(revive,2000)});
   peer.on('error',e=>{
     if(e.type==='peer-unavailable'){
-      if(S.v==='find'){S.found=null;S.msg='Не найден или не в сети';render()}
+      if(S.v==='find'&&S.msg==='Ищу…'){S.found=null;S.msg='Не в сети. Пусть откроет Кентофон и не сворачивает';render()}
       if(S.v==='calling')endCall('Кент не в сети');
-    }else if(e.type==='unavailable-id'){flash('Ты уже открыт в другой вкладке')}
-    else if(e.type==='network'||e.type==='server-error'||e.type==='socket-error'){setNet('off')}
+    }else if(e.type==='unavailable-id'){setNet('off');flash('Переподключаюсь…');retryPeer(5000)}
+    else if(['network','server-error','socket-error','socket-closed','disconnected'].includes(e.type)){setNet('off');retryPeer(4000)}
   });
   peer.on('connection',c=>{
     c.on('data',d=>{if(d&&d.t==='hi'){c.send({t:'me',nick:me.nick,id:me.id});addContact(String(d.id).slice(0,6),String(d.nick).slice(0,16),true)}});
@@ -236,19 +236,35 @@ function startPeer(){
     if(call){c.close();return}
     call=c;const m=c.metadata||{};
     S.peerNick=String(m.nick||'Неизвестный').slice(0,16);S.peerId=String(m.id||'').slice(0,6);
+    if(/^\d{6}$/.test(S.peerId))addContact(S.peerId,S.peerNick,true);
     go('incoming');ringStart();
     c.on('close',()=>endCall('Звонок завершён'));
   });
 }
 
+let retryT=null;
+function retryPeer(ms){clearTimeout(retryT);retryT=setTimeout(()=>{if(me&&!call&&(!peer||!peer.open))startPeer()},ms)}
+function revive(){
+  if(!me)return;
+  if(!peer||peer.destroyed)return startPeer();
+  if(peer.disconnected){try{peer.reconnect()}catch(e){startPeer()}}
+}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')revive()});
+window.addEventListener('online',revive);
+window.addEventListener('focus',revive);
+setInterval(()=>{if(me&&peer&&!peer.open&&!call)revive()},8000);
 function search(){
   const id=S.digits;
   if(id.length!==6){S.msg='ID — это 6 цифр';return render()}
   if(id===me.id){S.msg='Это твой же ID, братан';return render()}
-  if(!peer||!peer.open){S.msg='Нет сети';return render()}
+  if(!peer||!peer.open){revive();S.msg='Ты не в сети, подожди пару сек';return render()}
   S.found=null;S.msg='Ищу…';render();
   const c=peer.connect(PFX+id,{reliable:true});
-  const to=setTimeout(()=>{if(!S.found&&S.v==='find'&&S.msg==='Ищу…'){S.msg='Не найден или не в сети';render()}try{c.close()}catch(e){}},9000);
+  /* если сервер не сказал "нет такого" — значит кент в сети, даже если прямой канал не пробился */
+  const to=setTimeout(()=>{
+    if(!S.found&&S.v==='find'&&S.msg==='Ищу…'&&S.digits===id){S.found={id,nick:'Кент '+id.slice(-3),weak:true};render()}
+    try{c.close()}catch(e){}
+  },7000);
   c.on('open',()=>c.send({t:'hi',nick:me.nick,id:me.id}));
   c.on('data',d=>{if(d&&d.t==='me'){clearTimeout(to);S.found={id:String(d.id).slice(0,6),nick:String(d.nick).slice(0,16)};S.msg='';if(S.v==='find')render();setTimeout(()=>c.close(),800)}});
 }
