@@ -3,365 +3,305 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b0906">
 <title>Кентофон</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800&family=Manrope:wght@500;700&display=swap" rel="stylesheet">
 <style>
-/* VOICE: дерзкий люкс, золото как у дорогих кнопочных телефонов
-   IDEA: сам сайт — это золотой кнопочный телефон, всё управление кнопками
-   PICTURE: корпус из полированного золота, блик пробегает по корпусу, кнопки отражают свет
-   COLOUR/TYPE: чёрный бархат, золото, янтарный ЖК-экран; Cinzel + Share Tech Mono
-   LAYOUT: телефон по центру экрана, на мобиле на всю ширину */
-:root{color-scheme:dark;
---gold:linear-gradient(135deg,#6e4f0e 0%,#f9e08b 16%,#c99a2e 32%,#fff6cf 48%,#b8861f 62%,#f5d77a 80%,#6e4f0e 100%);
---gold2:linear-gradient(180deg,#fff3c4 0%,#f0cc62 22%,#c4921f 55%,#8a6414 80%,#d9b04a 100%);
---lcd:#f5d77a;--lcd2:#8f7432}
+/* VOICE: дерзко и дорого, голосовая тусовка своих
+   IDEA: голосовая комната как в дискорде, только золотая
+   PICTURE: плитки участников с золотым кольцом, которое светится, когда человек говорит
+   COLOUR/TYPE: почти чёрный, золото, белый текст; Unbounded + Manrope
+   LAYOUT: лобби — одна карточка по центру; комната — код сверху, плитки, панель снизу */
+:root{color-scheme:dark;--bg:#0b0906;--card:rgba(255,236,190,.05);--line:rgba(245,215,122,.16);--ink:#f7f1e3;--dim:#a99c7e;
+--gold:linear-gradient(135deg,#8a6414 0%,#f9e08b 22%,#c99a2e 45%,#fff3c4 58%,#c4921f 78%,#f5d77a 100%);--g:#f2cc5d;--red:#ff5a4a;--ok:#7be07f}
 *{box-sizing:border-box;min-width:0;-webkit-tap-highlight-color:transparent}
-body{margin:0;min-height:100vh;display:grid;place-items:center;padding:18px 10px;
-background:radial-gradient(ellipse at 50% 30%,#3a2a0a 0%,#120c03 45%,#050403 100%);
-font:16px/1.4 "Share Tech Mono",ui-monospace,monospace;color:#2b1d03;overflow-x:clip}
-.phone{position:relative;width:min(370px,94vw);padding:22px 20px 26px;border-radius:52px 52px 60px 60px;
-background:var(--gold);overflow:hidden;
-box-shadow:0 40px 80px rgba(0,0,0,.7),0 0 60px rgba(240,190,70,.18),inset 0 2px 2px rgba(255,255,255,.9),inset 0 -6px 12px rgba(80,50,5,.6),inset 6px 0 14px rgba(255,240,190,.35),inset -6px 0 14px rgba(90,60,5,.45)}
-.phone::after{content:"";position:absolute;inset:-40%;pointer-events:none;
-background:linear-gradient(115deg,transparent 42%,rgba(255,255,255,.55) 49%,rgba(255,255,255,.1) 53%,transparent 58%);
-animation:shine 5.5s ease-in-out infinite}
-@keyframes shine{0%,55%{transform:translateX(-60%)}100%{transform:translateX(60%)}}
-@media(prefers-reduced-motion:reduce){.phone::after{animation:none;opacity:0}}
-.speaker{width:70px;height:7px;margin:0 auto 10px;border-radius:9px;background:#3a2806;box-shadow:inset 0 2px 3px #000,0 1px 0 rgba(255,255,255,.7)}
-.brand{text-align:center;font:800 15px/1 Cinzel,serif;letter-spacing:.32em;color:#5a3e07;text-shadow:0 1px 0 rgba(255,250,220,.85),0 -1px 0 rgba(70,45,0,.5);margin-bottom:12px}
-.screen{position:relative;height:250px;border-radius:14px;padding:8px 12px;background:radial-gradient(ellipse at 30% 0%,#2a220f,#070604 70%);
-border:3px solid #4a3407;box-shadow:inset 0 0 22px rgba(0,0,0,.95),0 1px 0 rgba(255,255,255,.8);color:var(--lcd);display:flex;flex-direction:column;overflow:hidden}
-.screen::before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(160deg,rgba(255,255,255,.12),transparent 40%)}
-.bar{display:flex;justify-content:space-between;font-size:13px;color:var(--lcd2);border-bottom:1px solid #3a2e12;padding-bottom:3px}
-#net.on{color:#9be36b}#net.off{color:#d9553f}
-#scr{flex:1;overflow:hidden;padding-top:6px}
-.soft{display:flex;justify-content:space-between;font-size:14px;border-top:1px solid #3a2e12;padding-top:3px}
-.t{font-size:18px;margin:0 0 6px;text-shadow:0 0 6px rgba(245,215,122,.45)}
-.big{font-size:30px;letter-spacing:.08em;text-align:center;margin:10px 0;text-shadow:0 0 10px rgba(245,215,122,.5)}
-.c{text-align:center}.dim{color:var(--lcd2);font-size:13px}
-.err{color:#ff8a6b;font-size:13px;min-height:17px}
-.ls{list-style:none;margin:0;padding:0}
-.ls li{padding:5px 8px;border-radius:6px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ls li.on{background:var(--gold2);color:#2b1d03;box-shadow:0 0 10px rgba(245,215,122,.4)}
-.tabs{display:flex;gap:6px;margin-bottom:6px}.tabs span{flex:1;text-align:center;padding:3px;border-radius:6px;border:1px solid #4a3a14;cursor:pointer;font-size:14px}
-.tabs span.on{background:var(--gold2);color:#2b1d03}
-.screen input{width:100%;margin:3px 0;padding:6px 8px;font:16px "Share Tech Mono",monospace;color:var(--lcd);background:#0f0c05;border:1px solid #5a4614;border-radius:6px;outline:none}
-.screen input:focus{border-color:var(--lcd);box-shadow:0 0 8px rgba(245,215,122,.4)}
-.toast{position:absolute;left:10px;right:10px;bottom:30px;padding:6px;border-radius:8px;text-align:center;font-size:14px;background:var(--gold2);color:#2b1d03;opacity:0;transition:opacity .25s;pointer-events:none}
-.toast.on{opacity:1}
-.pulse{animation:pulse 1s ease-in-out infinite}@keyframes pulse{50%{opacity:.35}}
-.nav{display:grid;grid-template-columns:1fr 1.3fr 1fr;gap:10px;align-items:center;margin:16px 0 12px}
-.side{display:grid;gap:10px}
-.dpad{position:relative;width:118px;height:118px;margin:auto;border-radius:50%;background:var(--gold);
-box-shadow:inset 0 3px 3px rgba(255,255,255,.9),inset 0 -5px 8px rgba(70,45,0,.6),0 6px 12px rgba(0,0,0,.45)}
-.dpad button{position:absolute;width:40px;height:34px;border:0;background:transparent;color:#4a3205;font-size:14px;cursor:pointer;text-shadow:0 1px 0 rgba(255,255,255,.7)}
-.dpad [data-k=up]{top:4px;left:39px}.dpad [data-k=down]{bottom:4px;left:39px}
-.dpad [data-k=left]{left:2px;top:42px}.dpad [data-k=right]{right:2px;top:42px}
-.dpad .ok{width:52px!important;height:52px!important;left:33px;top:33px;border-radius:50%;background:var(--gold2)!important;font:800 13px Cinzel,serif!important;
-box-shadow:inset 0 2px 2px rgba(255,255,255,.95),inset 0 -3px 5px rgba(80,50,0,.6),0 2px 5px rgba(0,0,0,.5)}
-.k{position:relative;height:46px;border:0;border-radius:16px;cursor:pointer;overflow:hidden;
-background:var(--gold2);color:#3a2604;font:600 20px/1 Cinzel,serif;text-shadow:0 1px 0 rgba(255,250,220,.9);
-box-shadow:inset 0 2px 1px rgba(255,255,255,.95),inset 0 -4px 6px rgba(90,55,0,.55),0 4px 8px rgba(0,0,0,.45);transition:transform .06s}
-.k::before{content:"";position:absolute;left:10%;right:10%;top:3px;height:40%;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,.75),rgba(255,255,255,0));pointer-events:none}
-.k:active,.k.p,.dpad button:active{transform:translateY(2px);filter:brightness(.88)}
-.k small{display:block;font:10px "Share Tech Mono",monospace;letter-spacing:.1em;color:#6b4a0a;margin-top:2px}
-.k svg{width:24px;height:24px;vertical-align:middle}
-.call svg{fill:#1f8a3a}.end svg{fill:#c0281c}
-.sk{height:34px;font-size:12px}
-.pad{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
-.pad .k{height:50px;border-radius:22px 22px 26px 26px}
-button:focus-visible{outline:2px solid #fff6cf;outline-offset:2px}
-.foot{margin-top:14px;text-align:center;font:600 10px Cinzel,serif;letter-spacing:.3em;color:#6b4a0a;text-shadow:0 1px 0 rgba(255,255,255,.6)}
+html,body{height:100%}
+body{margin:0;background:radial-gradient(ellipse 80% 60% at 50% -10%,rgba(242,204,93,.22),transparent 60%),radial-gradient(ellipse 60% 50% at 100% 110%,rgba(242,204,93,.08),transparent 60%),var(--bg);
+color:var(--ink);font:16px/1.5 Manrope,system-ui,sans-serif;overflow-x:clip}
+button,input{font:inherit;color:inherit}
+.wrap{min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:max(24px,env(safe-area-inset-top)) 16px 24px}
+.logo{font:800 clamp(34px,8vw,52px)/1.05 Unbounded,sans-serif;letter-spacing:-.02em;background:var(--gold);-webkit-background-clip:text;background-clip:text;color:transparent;margin:0 0 6px;text-align:center}
+.sub{color:var(--dim);text-align:center;margin:0 0 26px}
+.card{width:min(420px,100%);padding:22px;border-radius:28px;background:var(--card);border:1px solid var(--line);backdrop-filter:blur(18px);box-shadow:0 30px 80px rgba(0,0,0,.5)}
+label{display:block;font-size:13px;color:var(--dim);margin:0 0 6px}
+input{width:100%;height:52px;padding:0 16px;border-radius:16px;border:1px solid var(--line);background:rgba(0,0,0,.35);font-size:17px;outline:none;transition:border-color .2s}
+input:focus{border-color:var(--g);box-shadow:0 0 0 3px rgba(242,204,93,.15)}
+#code{text-transform:uppercase;letter-spacing:.3em;font:800 20px Unbounded,sans-serif;text-align:center}
+.btn{position:relative;overflow:hidden;width:100%;height:54px;border:0;border-radius:16px;cursor:pointer;font-weight:700;font-size:16px;transition:transform .08s,filter .2s}
+.btn:active{transform:scale(.98)}
+.gold{background:var(--gold);color:#2a1c02;box-shadow:0 10px 30px rgba(242,204,93,.25),inset 0 1px 0 rgba(255,255,255,.7)}
+.gold::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 35%,rgba(255,255,255,.6) 50%,transparent 65%);transform:translateX(-100%);animation:sh 3.5s ease-in-out infinite}
+@keyframes sh{60%,100%{transform:translateX(100%)}}
+.ghost{background:rgba(255,255,255,.06);border:1px solid var(--line)}
+.row{display:flex;gap:10px}.row>*{flex:1}
+.gap{height:14px}
+.or{display:flex;align-items:center;gap:12px;color:var(--dim);font-size:13px;margin:18px 0}.or::before,.or::after{content:"";flex:1;height:1px;background:var(--line)}
+.err{color:var(--red);font-size:14px;min-height:20px;margin-top:10px;text-align:center}
+.last{margin-top:14px;text-align:center;font-size:14px;color:var(--dim)}.last button{background:none;border:0;color:var(--g);cursor:pointer;font-weight:700;padding:6px}
+/* комната */
+.room{width:min(900px,100%);min-height:100%;display:flex;flex-direction:column;padding:max(16px,env(safe-area-inset-top)) 16px 0}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:6px 0 18px}
+.rc{display:flex;align-items:center;gap:12px}
+.rc .lbl{font-size:13px;color:var(--dim)}
+.rc .cd{font:800 28px/1 Unbounded,sans-serif;letter-spacing:.14em;background:var(--gold);-webkit-background-clip:text;background-clip:text;color:transparent}
+.chip{height:40px;padding:0 14px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.05);cursor:pointer;font-size:14px;font-weight:700;color:var(--ink)}
+.st{font-size:14px;color:var(--dim);display:flex;align-items:center;gap:8px}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--dim)}.dot.on{background:var(--ok);box-shadow:0 0 10px var(--ok)}.dot.wait{background:var(--g);animation:bl 1s infinite}
+@keyframes bl{50%{opacity:.3}}
+.grid{flex:1;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(200px,44%),1fr));gap:14px;align-content:start;padding-bottom:120px}
+.tile{--lvl:0;position:relative;aspect-ratio:1/1.05;border-radius:26px;background:var(--card);border:1px solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:14px;transition:border-color .15s}
+.tile.talk{border-color:rgba(242,204,93,.7)}
+.av{position:relative;width:min(96px,52%);aspect-ratio:1;border-radius:50%;background:var(--gold);display:grid;place-items:center;font:800 clamp(26px,6vw,36px) Unbounded,sans-serif;color:#2a1c02;
+box-shadow:0 0 0 calc(var(--lvl)*10px) rgba(242,204,93,.25),0 0 calc(var(--lvl)*40px) rgba(242,204,93,.6);transition:box-shadow .08s}
+.nm{font-weight:700;font-size:17px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ps{font-size:13px;color:var(--dim)}.ps.ok{color:var(--ok)}.ps.bad{color:var(--red)}
+.mute-badge{position:absolute;top:12px;right:12px;width:30px;height:30px;border-radius:50%;background:var(--red);display:grid;place-items:center}
+.mute-badge svg{width:16px;height:16px;fill:#fff}
+.empty{grid-column:1/-1;text-align:center;color:var(--dim);padding:20px;border:1px dashed var(--line);border-radius:22px}
+.bar{position:fixed;left:50%;bottom:max(18px,env(safe-area-inset-bottom));transform:translateX(-50%);display:flex;gap:12px;padding:10px;border-radius:24px;background:rgba(20,16,10,.8);border:1px solid var(--line);backdrop-filter:blur(18px);box-shadow:0 20px 50px rgba(0,0,0,.6)}
+.rb{width:62px;height:56px;border-radius:18px;border:0;cursor:pointer;display:grid;place-items:center;background:rgba(255,255,255,.08)}
+.rb svg{width:26px;height:26px;fill:var(--ink)}
+.rb.off{background:var(--red)}
+.rb.leave{background:var(--red);width:84px}
+.toast{position:fixed;left:50%;top:max(16px,env(safe-area-inset-top));transform:translate(-50%,-160%);opacity:0;padding:10px 18px;border-radius:14px;background:var(--gold);color:#2a1c02;font-weight:700;transition:transform .3s,opacity .3s;z-index:9;max-width:90vw;text-align:center}
+.toast.on{transform:translate(-50%,0);opacity:1}
+.tap{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;place-items:center;z-index:8}.tap.on{display:grid}
+button:focus-visible{outline:2px solid var(--g);outline-offset:3px}
+[hidden]{display:none!important}
+@media(prefers-reduced-motion:reduce){.gold::after,.dot.wait{animation:none}}
 </style>
 </head>
 <body>
-<div class="phone">
-  <div class="speaker"></div>
-  <div class="brand">KENTOFON</div>
-  <div class="screen">
-    <div class="bar"><span id="net" class="off">● сеть</span><span id="clock">--:--</span><span id="who"></span></div>
-    <div id="scr"></div>
-    <div class="soft"><span id="sl">Выбор</span><span id="sr">Назад</span></div>
-    <div class="toast" id="toast"></div>
-  </div>
-  <div class="nav">
-    <div class="side">
-      <button class="k sk" data-k="sl" aria-label="Левая кнопка">●</button>
-      <button class="k call" data-k="call" aria-label="Позвонить"><svg viewBox="0 0 24 24"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg></button>
+<div class="toast" id="toast"></div>
+<div class="tap" id="tap"><button class="btn gold" style="width:auto;padding:0 28px">Включить звук</button></div>
+
+<main class="wrap" id="lobby">
+  <h1 class="logo">Кентофон</h1>
+  <p class="sub">Создал комнату, скинул код — и вы на связи</p>
+  <div class="card">
+    <label for="nick">Твой ник</label>
+    <input id="nick" maxlength="20" placeholder="Как тебя звать" autocomplete="nickname">
+    <div class="gap"></div>
+    <button class="btn gold" id="create">Создать комнату</button>
+    <div class="or">или зайти по коду</div>
+    <div class="row">
+      <input id="code" maxlength="5" placeholder="КОД" autocomplete="off" autocapitalize="characters" spellcheck="false">
+      <button class="btn ghost" id="join" style="flex:0 0 120px">Войти</button>
     </div>
-    <div class="dpad">
-      <button data-k="up" aria-label="Вверх">▲</button>
-      <button data-k="left" aria-label="Влево">◀</button>
-      <button class="ok" data-k="ok">OK</button>
-      <button data-k="right" aria-label="Вправо">▶</button>
-      <button data-k="down" aria-label="Вниз">▼</button>
-    </div>
-    <div class="side">
-      <button class="k sk" data-k="sr" aria-label="Правая кнопка">●</button>
-      <button class="k end" data-k="end" aria-label="Сбросить"><svg viewBox="0 0 24 24"><path d="M12 9c-1.6 0-3.15.25-4.6.72v3.1a1 1 0 0 1-.56.9 11.5 11.5 0 0 0-2.66 1.85 1 1 0 0 1-1.4 0L.29 13.08a1 1 0 0 1 0-1.41A16.9 16.9 0 0 1 12 7c4.5 0 8.6 1.75 11.71 4.67a1 1 0 0 1 0 1.41l-2.48 2.49a1 1 0 0 1-1.4 0 11.3 11.3 0 0 0-2.67-1.85 1 1 0 0 1-.56-.9v-3.1A14.8 14.8 0 0 0 12 9z"/></svg></button>
-    </div>
+    <div class="err" id="err"></div>
+    <div class="last" id="last" hidden></div>
   </div>
-  <div class="pad">
-    <button class="k" data-k="1">1<small>&nbsp;</small></button>
-    <button class="k" data-k="2">2<small>АБВГ</small></button>
-    <button class="k" data-k="3">3<small>ДЕЖЗ</small></button>
-    <button class="k" data-k="4">4<small>ИЙКЛ</small></button>
-    <button class="k" data-k="5">5<small>МНОП</small></button>
-    <button class="k" data-k="6">6<small>РСТУ</small></button>
-    <button class="k" data-k="7">7<small>ФХЦЧ</small></button>
-    <button class="k" data-k="8">8<small>ШЩЪЫ</small></button>
-    <button class="k" data-k="9">9<small>ЬЭЮЯ</small></button>
-    <button class="k" data-k="*">✱<small>удалить</small></button>
-    <button class="k" data-k="0">0<small>+</small></button>
-    <button class="k" data-k="#">#<small>&nbsp;</small></button>
+</main>
+
+<section class="room" id="room" hidden>
+  <div class="top">
+    <div class="rc"><div><div class="lbl">Код комнаты</div><div class="cd" id="rcode"></div></div>
+      <button class="chip" id="copy">Скопировать</button></div>
+    <div class="st"><span class="dot wait" id="sdot"></span><span id="stxt">Подключаюсь…</span></div>
   </div>
-  <div class="foot">24K · GOLD EDITION</div>
-</div>
-<audio id="remote" autoplay playsinline></audio>
+  <div class="grid" id="grid"></div>
+  <div class="bar">
+    <button class="rb" id="mute" aria-label="Микрофон"></button>
+    <button class="rb leave" id="leave" aria-label="Выйти"><svg viewBox="0 0 24 24"><path d="M12 9c-1.6 0-3.15.25-4.6.72v3.1a1 1 0 0 1-.56.9 11.5 11.5 0 0 0-2.66 1.85 1 1 0 0 1-1.4 0L.29 13.08a1 1 0 0 1 0-1.41A16.9 16.9 0 0 1 12 7c4.5 0 8.6 1.75 11.71 4.67a1 1 0 0 1 0 1.41l-2.48 2.49a1 1 0 0 1-1.4 0 11.3 11.3 0 0 0-2.67-1.85 1 1 0 0 1-.56-.9v-3.1A14.8 14.8 0 0 0 12 9z"/></svg></button>
+  </div>
+</section>
 
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 <script>
 {
 const $=s=>document.querySelector(s);
-const scr=$('#scr');
-const PFX='kentofon-gold-v1-';
 const esc=t=>String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-let store={};
-try{store=JSON.parse(localStorage.getItem('kentofon')||'{}')}catch(e){store={}}
-store.accounts=store.accounts||{};
-const save=()=>{try{localStorage.setItem('kentofon',JSON.stringify(store))}catch(e){}};
-let me=store.session&&store.accounts[store.session]?store.accounts[store.session]:null;
-const S={v:'auth',sel:0,mode:'login',digits:'',msg:'',found:null,peerNick:'',peerId:''};
-let peer=null,stream=null,call=null,callTimer=null,callStart=0,noAnswer=null,toastT=null;
-const MENU=['Контакты','Найти по ID','Мой номер','Выйти'];
+const PFX='kentofon-room-v2-';
+const AL='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+const OPTS={debug:0,config:{iceServers:[
+  {urls:['stun:stun.l.google.com:19302','stun:stun1.l.google.com:19302']},
+  {urls:['turn:eu-0.turn.peerjs.com:3478','turn:us-0.turn.peerjs.com:3478'],username:'peerjs',credential:'peerjsp'}
+]}};
+const MIC_ON='<svg viewBox="0 0 24 24"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-3.08A7 7 0 0 0 19 11z"/></svg>';
+const MIC_OFF='<svg viewBox="0 0 24 24"><path d="M19 11h-2c0 .74-.16 1.43-.43 2.05l1.46 1.46A6.9 6.9 0 0 0 19 11zM15 11V5a3 3 0 0 0-5.94-.6L15 10.33zM4.27 3 3 4.27l6 6V11a3 3 0 0 0 4.53 2.58l1.65 1.65A5 5 0 0 1 7 11H5a7 7 0 0 0 6 6.92V21h2v-3.08a6.9 6.9 0 0 0 2.6-.9L19.73 21 21 19.73z"/></svg>';
+const ls={get:k=>{try{return localStorage.getItem(k)}catch(e){return null}},set:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}}};
 
-async function hash(s){
-  if(window.crypto&&crypto.subtle){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
-  let h=7;for(const c of s)h=(h*31+c.charCodeAt(0))|0;return 'x'+h;
+let nick='',code='',me=null,myId='',host=null,toHost=null,local=null,muted=false,leaving=true,ac=null,joinT=null;
+let members={};               // peerId -> ник (список от хоста)
+const hostConns=new Map();     // у хоста: peerId -> data-соединение
+const peers=new Map();         // peerId -> {call,state,audio,an,lvl,missing}
+
+let toastT;function toast(t){const el=$('#toast');el.textContent=t;el.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('on'),2400)}
+const err=t=>$('#err').textContent=t;
+function status(t,s){$('#stxt').textContent=t;$('#sdot').className='dot '+(s||'')}
+const newCode=()=>Array.from({length:5},()=>AL[Math.floor(Math.random()*AL.length)]).join('');
+const clean=c=>String(c||'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,5);
+
+/* ---------- лобби ---------- */
+$('#nick').value=ls.get('kf_nick')||'';
+const hc=clean(location.hash.slice(1));if(hc.length===5){$('#code').value=hc}
+const lastC=ls.get('kf_last');
+if(lastC&&lastC!==hc){$('#last').hidden=false;$('#last').innerHTML='Последняя комната: <button id="lastbtn">'+esc(lastC)+' — зайти</button>';$('#lastbtn').onclick=()=>{$('#code').value=lastC;enter(lastC)}}
+$('#code').addEventListener('input',e=>{e.target.value=clean(e.target.value)});
+$('#code').addEventListener('keydown',e=>{if(e.key==='Enter')$('#join').click()});
+$('#create').onclick=()=>enter(newCode());
+$('#join').onclick=()=>{const c=clean($('#code').value);if(c.length!==5)return err('Код — 5 символов');enter(c)};
+
+async function enter(c){
+  nick=$('#nick').value.trim().slice(0,20);
+  if(!nick){err('Впиши ник');$('#nick').focus();return}
+  if(typeof Peer==='undefined')return err('Нет интернета, обнови страницу');
+  err('');ls.set('kf_nick',nick);
+  try{local=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}})}
+  catch(e){return err('Разреши доступ к микрофону')}
+  try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();ac.resume()}catch(e){}
+  code=c;leaving=false;muted=false;members={};ls.set('kf_last',code);
+  try{history.replaceState(null,'','#'+code)}catch(e){location.hash=code}
+  $('#lobby').hidden=true;$('#room').hidden=false;$('#rcode').textContent=code;
+  ensure('self');meter(peers.get('self'),local);
+  renderMute();render();status('Подключаюсь…','wait');
+  startMe();
 }
-function newId(){let id;do{id=String(100000+Math.floor(Math.random()*900000))}while(Object.values(store.accounts).some(a=>a.id===id));return id}
-const fmtId=id=>String(id).replace(/(\d{3})(\d{3})/,'$1 $2');
 
-function flash(t){const el=$('#toast');el.textContent=t;el.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('on'),2200)}
-function setNet(s){const n=$('#net');n.className=s==='on'?'on':'off';n.textContent=s==='on'?'● в сети':'● нет сети'}
-function soft(l,r){$('#sl').textContent=l;$('#sr').textContent=r}
-function list(items,empty){
-  if(!items.length)return `<div class="dim c" style="margin-top:30px">${empty}</div>`;
-  const start=Math.max(0,Math.min(S.sel-3,items.length-6));
-  return '<ul class="ls">'+items.slice(start,start+6).map((t,i)=>`<li data-i="${start+i}" class="${start+i===S.sel?'on':''}">${t}</li>`).join('')+'</ul>';
+/* ---------- сеть ---------- */
+function startMe(){
+  me=new Peer(OPTS);
+  me.on('open',id=>{myId=id;members[myId]=nick;tryHost()});
+  me.on('call',c=>{attach(c.peer,c);c.answer(local);watchIce(c.peer,c)});
+  me.on('disconnected',()=>{if(!leaving){status('Нет сети, переподключаюсь…','wait');setTimeout(()=>{try{me.reconnect()}catch(e){}},1500)}});
+  me.on('error',e=>{
+    if(leaving)return;
+    if(e.type==='peer-unavailable'){if(!toHost||!toHost.open)setTimeout(tryHost,500)}
+    else if(['network','server-error','socket-error','socket-closed'].includes(e.type)){status('Нет сети, переподключаюсь…','wait')}
+  });
 }
+function tryHost(){
+  if(leaving||!myId)return;
+  clearTimeout(joinT);
+  const h=new Peer(PFX+code,OPTS);
+  h.on('open',()=>{host=h;members={[myId]:nick};for(const id of peers.keys())if(id!=='self'&&peers.get(id).state==='ok')members[id]=members[id]||'…';broadcast();status('Ты в комнате','on')});
+  h.on('connection',c=>{
+    c.on('data',d=>{if(d&&d.t==='join'&&typeof d.id==='string'){c.mid=d.id;hostConns.set(d.id,c);members[d.id]=String(d.nick||'Кент').slice(0,20);broadcast();toast(members[d.id]+' зашёл')}});
+    c.on('close',()=>{if(c.mid&&hostConns.get(c.mid)===c){hostConns.delete(c.mid);const n=members[c.mid];delete members[c.mid];broadcast();if(n)toast(n+' вышел')}});
+  });
+  h.on('error',e=>{
+    if(e.type==='unavailable-id'){h.destroy();joinHost()}
+    else if(host===h&&!leaving){status('Нет сети, переподключаюсь…','wait')}
+  });
+  h.on('disconnected',()=>{if(host===h&&!leaving)setTimeout(()=>{try{h.reconnect()}catch(e){}},1500)});
+}
+function joinHost(){
+  if(leaving)return;
+  if(toHost){try{toHost.close()}catch(e){}}
+  const c=me.connect(PFX+code,{reliable:true});toHost=c;
+  joinT=setTimeout(()=>{if(toHost===c&&!c.open){status('Пробиваюсь в комнату…','wait');try{c.close()}catch(e){}toHost=null;tryHost()}},12000);
+  c.on('open',()=>{clearTimeout(joinT);c.send({t:'join',id:myId,nick});status('Ты в комнате','on')});
+  c.on('data',d=>{if(d&&d.t==='list'&&d.members&&typeof d.members==='object')applyList(d.members)});
+  c.on('close',()=>{if(toHost===c&&!leaving){toHost=null;status('Комната переезжает…','wait');setTimeout(tryHost,200+Math.random()*1500)}});
+}
+function broadcast(){
+  const list={...members};
+  hostConns.forEach(c=>{if(c.open)try{c.send({t:'list',members:list})}catch(e){}});
+  applyList(list);
+}
+function applyList(m){
+  const out={};for(const k in m)out[String(k)]=String(m[k]).slice(0,20);
+  out[myId]=nick;members=out;
+  for(const id in members){
+    if(id===myId)continue;
+    const p=ensure(id);p.missing=0;
+    if(myId<id&&!p.call)callPeer(id);   // звонит тот, у кого id меньше — без дублей
+  }
+  render();
+}
+function callPeer(id){
+  if(leaving||!me||me.destroyed)return;
+  const c=me.call(id,local,{metadata:{nick}});
+  if(!c)return;
+  attach(id,c);watchIce(id,c);
+}
+function attach(id,c){
+  const p=ensure(id);
+  if(p.call&&p.call!==c){const old=p.call;p.call=null;try{old.close()}catch(e){}}
+  p.call=c;p.state='conn';
+  if(c.metadata&&c.metadata.nick&&!members[id])members[id]=String(c.metadata.nick).slice(0,20);
+  c.on('stream',s=>{p.audio.srcObject=s;p.audio.play().catch(()=>$('#tap').classList.add('on'));p.state='ok';meter(p,s);render()});
+  c.on('close',()=>{if(p.call!==c)return;p.call=null;p.state='lost';render();retry(id)});
+  c.on('error',()=>{if(p.call===c){p.state='bad';render();retry(id)}});
+  render();
+}
+function watchIce(id,c){
+  setTimeout(()=>{
+    const pc=c.peerConnection;if(!pc)return;
+    pc.addEventListener('iceconnectionstatechange',()=>{
+      const st=pc.iceConnectionState,p=peers.get(id);if(!p||p.call!==c)return;
+      if(st==='failed'){p.state='bad';render();try{c.close()}catch(e){}}
+      else if(st==='disconnected'){p.state='lost';render()}
+      else if(st==='connected'||st==='completed'){if(p.audio.srcObject){p.state='ok';render()}}
+    });
+  },0);
+  setTimeout(()=>{const p=peers.get(id);if(p&&p.call===c&&p.state==='conn'){p.state='bad';render();try{c.close()}catch(e){}}},25000);
+}
+function retry(id){if(!leaving&&members[id]&&myId<id)setTimeout(()=>{const p=peers.get(id);if(p&&!p.call&&members[id])callPeer(id)},2500)}
+function ensure(id){
+  if(!peers.has(id)){const a=new Audio();a.autoplay=true;a.setAttribute('playsinline','');peers.set(id,{call:null,state:'conn',audio:a,an:null,lvl:0,missing:0})}
+  return peers.get(id);
+}
+function drop(id){const p=peers.get(id);if(!p)return;if(p.call)try{p.call.close()}catch(e){}p.audio.srcObject=null;peers.delete(id)}
+setInterval(()=>{ // убираем ушедших с задержкой, чтобы переезд хоста не рвал звук
+  if(leaving)return;let ch=false;
+  for(const [id,p] of peers){if(id==='self'||members[id])continue;p.missing++;if(p.missing>=3||p.state!=='ok'){drop(id);ch=true}}
+  if(ch)render();
+},2000);
 
+/* ---------- звук: кто говорит ---------- */
+function meter(p,s){try{if(!ac)return;const src=ac.createMediaStreamSource(s),an=ac.createAnalyser();an.fftSize=512;src.connect(an);p.an=an}catch(e){}}
+const buf=new Uint8Array(512);
+function loop(){
+  if(!leaving){for(const [id,p] of peers){
+    if(!p.an)continue;p.an.getByteTimeDomainData(buf);let sum=0;for(let i=0;i<buf.length;i++){const v=(buf[i]-128)/128;sum+=v*v}
+    let l=Math.min(1,Math.sqrt(sum/buf.length)*6);if(id==='self'&&muted)l=0;p.lvl=p.lvl*.7+l*.3;
+    const el=document.querySelector(`.tile[data-id="${CSS.escape(id)}"]`);if(el){el.style.setProperty('--lvl',p.lvl.toFixed(2));el.classList.toggle('talk',p.lvl>.12)}
+  }}
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+/* ---------- отрисовка ---------- */
+const ST={conn:['соединяюсь…',''],ok:['на связи','ok'],lost:['переподключаю…',''],bad:['не пробился, пробую ещё','bad']};
+function tile(id,name,st,isMe){
+  const s=ST[st]||ST.conn;
+  return `<div class="tile" data-id="${esc(id)}">${isMe&&muted?'<div class="mute-badge">'+MIC_OFF+'</div>':''}
+    <div class="av">${esc((name||'?').trim().charAt(0).toUpperCase()||'?')}</div>
+    <div class="nm">${esc(name||'Кент')}${isMe?' (ты)':''}</div>
+    <div class="ps ${isMe?'ok':s[1]}">${isMe?(muted?'микрофон выключен':'это ты'):s[0]}</div></div>`;
+}
 function render(){
-  const v=S.v;
-  $('#who').textContent=me?me.nick:'';
-  if(v==='auth'){
-    const reg=S.mode==='reg';
-    scr.innerHTML=`<div class="tabs"><span data-m="login" class="${reg?'':'on'}">Вход</span><span data-m="reg" class="${reg?'on':''}">Регистрация</span></div>
-      <input id="fLogin" placeholder="логин" autocomplete="username" autocapitalize="off">
-      <input id="fPass" type="password" placeholder="пароль" autocomplete="${reg?'new-password':'current-password'}">
-      ${reg?'<input id="fNick" placeholder="ник (как тебя видят)" maxlength="16">':''}
-      <div class="err" id="err">${esc(S.msg)}</div>`;
-    soft(reg?'Создать':'Войти','◀ ▶');
-  }else if(v==='menu'){
-    scr.innerHTML=`<p class="t">Меню</p>`+list(MENU.map(esc),'');
-    soft('Выбор','');
-  }else if(v==='contacts'){
-    const cs=me.contacts;
-    scr.innerHTML=`<p class="t">Контакты</p>`+list(cs.map(c=>`${esc(c.nick)} <span class="dim">${fmtId(c.id)}</span>`),'Пусто.<br>Найди кента по ID');
-    soft(cs.length?'Позвонить':'','Назад');
-  }else if(v==='find'){
-    const f=S.found;
-    scr.innerHTML=`<p class="t">Найти по ID</p><div class="big">${(fmtId(S.digits)||'')}<span class="pulse">_</span></div>
-      ${f?`<div class="c">${f.weak?'В сети':'Найден: <b>'+esc(f.nick)+'</b>'}<br><span class="dim">OK — добавить в контакты</span></div>`:`<div class="c dim ${S.msg==='Ищу…'?'pulse':''}">${esc(S.msg||'Набери 6 цифр и жми OK')}</div>`}`;
-    soft(f?'Добавить':'Искать',S.digits?'Стереть':'Назад');
-  }else if(v==='profile'){
-    scr.innerHTML=`<p class="t">Мой номер</p><div class="big">${fmtId(me.id)}</div>
-      <div class="c">${esc(me.nick)}</div><div class="c dim">логин: ${esc(me.login)}<br>Скинь этот ID Кенту</div>`;
-    soft('OK','Назад');
-  }else if(v==='calling'){
-    scr.innerHTML=`<div class="c" style="margin-top:28px"><div class="dim pulse">Вызов…</div><div class="big">${esc(S.peerNick)}</div><div class="dim">${fmtId(S.peerId)}</div></div>`;
-    soft('','Сброс');
-  }else if(v==='incoming'){
-    scr.innerHTML=`<div class="c" style="margin-top:22px"><div class="pulse">Входящий звонок</div><div class="big">${esc(S.peerNick)}</div><div class="dim">${fmtId(S.peerId)}<br>зелёная — ответить, красная — сбросить</div></div>`;
-    soft('Ответить','Сброс');
-  }else if(v==='incall'){
-    scr.innerHTML=`<div class="c" style="margin-top:28px"><div class="dim">На связи</div><div class="big">${esc(S.peerNick)}</div><div class="big" id="timer" style="font-size:22px">00:00</div></div>`;
-    soft('','Сброс');
-  }
+  const others=Object.keys(members).filter(id=>id!==myId);
+  for(const id of peers.keys())if(id!=='self'&&!others.includes(id)&&peers.get(id).state==='ok')others.push(id);
+  $('#grid').innerHTML=tile('self',nick,'ok',true)+others.map(id=>tile(id,members[id],(peers.get(id)||{}).state,false)).join('')+
+    (others.length?'':'<div class="empty">Пока никого. Скинь Кенту код <b>'+esc(code)+'</b> — или ссылку кнопкой «Скопировать»</div>');
 }
-
-async function auth(){
-  const err=t=>{S.msg=t;$('#err').textContent=t};
-  const L=($('#fLogin').value||'').trim().toLowerCase(),P=$('#fPass').value||'';
-  if(L.length<3||P.length<4)return err('Логин от 3, пароль от 4 символов');
-  const h=await hash(L+':'+P);
-  if(S.mode==='reg'){
-    const N=(($('#fNick')||{}).value||'').trim().slice(0,16);
-    if(!N)return err('Придумай ник');
-    if(store.accounts[L])return err('Логин уже занят');
-    store.accounts[L]={login:L,hash:h,nick:N,id:newId(),contacts:[]};
-  }else{
-    const a=store.accounts[L];
-    if(!a||a.hash!==h)return err('Неверный логин или пароль');
-  }
-  store.session=L;save();me=store.accounts[L];S.msg='';
-  go(S.mode==='reg'?'profile':'menu');startPeer();
+function renderMute(){$('#mute').innerHTML=muted?MIC_OFF:MIC_ON;$('#mute').classList.toggle('off',muted)}
+$('#mute').onclick=()=>{muted=!muted;if(local)local.getAudioTracks().forEach(t=>t.enabled=!muted);renderMute();render()};
+$('#copy').onclick=async()=>{
+  const link=location.href.split('#')[0]+'#'+code;
+  try{await navigator.clipboard.writeText('Залетай в Кентофон, код комнаты: '+code+'\n'+link);toast('Код и ссылка скопированы')}
+  catch(e){toast('Код: '+code)}
+};
+$('#tap').onclick=()=>{$('#tap').classList.remove('on');for(const p of peers.values())if(p.audio.srcObject)p.audio.play().catch(()=>{})};
+$('#leave').onclick=leave;
+function leave(){
+  leaving=true;clearTimeout(joinT);
+  for(const id of [...peers.keys()])drop(id);
+  if(toHost)try{toHost.close()}catch(e){}toHost=null;
+  hostConns.clear();
+  if(host)try{host.destroy()}catch(e){}host=null;
+  if(me)try{me.destroy()}catch(e){}me=null;myId='';
+  if(local)local.getTracks().forEach(t=>t.stop());local=null;
+  members={};
+  try{history.replaceState(null,'',location.pathname)}catch(e){}
+  $('#room').hidden=true;$('#lobby').hidden=false;
+  $('#code').value=code;
 }
-function logout(){if(peer){peer.destroy();peer=null}delete store.session;save();me=null;setNet('off');S.mode='login';go('auth')}
-
-function addContact(id,nick,silent){
-  const ex=me.contacts.find(c=>c.id===id);
-  if(ex){ex.nick=nick}else{me.contacts.push({id,nick});if(silent)flash(nick+' добавил тебя')}
-  save();
-}
-
-function startPeer(){
-  if(peer){peer.destroy();peer=null}
-  if(typeof Peer==='undefined'){setNet('off');flash('Нет интернета');return}
-  peer=new Peer(PFX+me.id);
-  peer.on('open',()=>setNet('on'));
-  peer.on('disconnected',()=>{setNet('off');setTimeout(revive,2000)});
-  peer.on('error',e=>{
-    if(e.type==='peer-unavailable'){
-      if(S.v==='find'&&S.msg==='Ищу…'){S.found=null;S.msg='Не в сети. Пусть откроет Кентофон и не сворачивает';render()}
-      if(S.v==='calling')endCall('Кент не в сети');
-    }else if(e.type==='unavailable-id'){setNet('off');flash('Переподключаюсь…');retryPeer(5000)}
-    else if(['network','server-error','socket-error','socket-closed','disconnected'].includes(e.type)){setNet('off');retryPeer(4000)}
-  });
-  peer.on('connection',c=>{
-    c.on('data',d=>{if(d&&d.t==='hi'){c.send({t:'me',nick:me.nick,id:me.id});addContact(String(d.id).slice(0,6),String(d.nick).slice(0,16),true)}});
-  });
-  peer.on('call',c=>{
-    if(call){c.close();return}
-    call=c;const m=c.metadata||{};
-    S.peerNick=String(m.nick||'Неизвестный').slice(0,16);S.peerId=String(m.id||'').slice(0,6);
-    if(/^\d{6}$/.test(S.peerId))addContact(S.peerId,S.peerNick,true);
-    go('incoming');ringStart();
-    c.on('close',()=>endCall('Звонок завершён'));
-  });
-}
-
-let retryT=null;
-function retryPeer(ms){clearTimeout(retryT);retryT=setTimeout(()=>{if(me&&!call&&(!peer||!peer.open))startPeer()},ms)}
-function revive(){
-  if(!me)return;
-  if(!peer||peer.destroyed)return startPeer();
-  if(peer.disconnected){try{peer.reconnect()}catch(e){startPeer()}}
-}
-document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')revive()});
-window.addEventListener('online',revive);
-window.addEventListener('focus',revive);
-setInterval(()=>{if(me&&peer&&!peer.open&&!call)revive()},8000);
-function search(){
-  const id=S.digits;
-  if(id.length!==6){S.msg='ID — это 6 цифр';return render()}
-  if(id===me.id){S.msg='Это твой же ID, братан';return render()}
-  if(!peer||!peer.open){revive();S.msg='Ты не в сети, подожди пару сек';return render()}
-  S.found=null;S.msg='Ищу…';render();
-  const c=peer.connect(PFX+id,{reliable:true});
-  /* если сервер не сказал "нет такого" — значит кент в сети, даже если прямой канал не пробился */
-  const to=setTimeout(()=>{
-    if(!S.found&&S.v==='find'&&S.msg==='Ищу…'&&S.digits===id){S.found={id,nick:'Кент '+id.slice(-3),weak:true};render()}
-    try{c.close()}catch(e){}
-  },7000);
-  c.on('open',()=>c.send({t:'hi',nick:me.nick,id:me.id}));
-  c.on('data',d=>{if(d&&d.t==='me'){clearTimeout(to);S.found={id:String(d.id).slice(0,6),nick:String(d.nick).slice(0,16)};S.msg='';if(S.v==='find')render();setTimeout(()=>c.close(),800)}});
-}
-
-async function getMic(){if(!stream)stream=await navigator.mediaDevices.getUserMedia({audio:true});return stream}
-function hookCall(c){
-  c.on('stream',rs=>{
-    const a=$('#remote');a.srcObject=rs;a.play().catch(()=>{});
-    ringStop();clearTimeout(noAnswer);
-    if(S.v!=='incall'){callStart=Date.now();go('incall');clearInterval(callTimer);callTimer=setInterval(tick,1000)}
-  });
-  c.on('close',()=>endCall('Звонок завершён'));
-  c.on('error',()=>endCall('Ошибка связи'));
-}
-async function dial(ct){
-  if(!peer||!peer.open)return flash('Нет сети');
-  S.peerNick=ct.nick;S.peerId=ct.id;go('calling');
-  try{await getMic()}catch(e){go('contacts');return flash('Дай доступ к микрофону')}
-  if(S.v!=='calling')return;
-  call=peer.call(PFX+ct.id,stream,{metadata:{nick:me.nick,id:me.id}});
-  hookCall(call);
-  noAnswer=setTimeout(()=>{if(S.v==='calling')endCall('Не отвечает')},40000);
-}
-async function accept(){
-  ringStop();
-  try{await getMic()}catch(e){endCall('Дай доступ к микрофону');return}
-  if(!call)return;
-  call.answer(stream);hookCall(call);
-}
-function endCall(m){
-  if(!['calling','incoming','incall'].includes(S.v))return;
-  S.v='contacts';S.sel=0;
-  const c=call;call=null;
-  clearInterval(callTimer);clearTimeout(noAnswer);ringStop();
-  if(c)try{c.close()}catch(e){}
-  $('#remote').srcObject=null;
-  if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}
-  render();flash(m);
-}
-function tick(){const t=$('#timer');if(!t)return;const s=Math.floor((Date.now()-callStart)/1000);t.textContent=String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')}
-
-/* звуки: клик кнопок и рингтон */
-let ac=null;
-function beep(f,d,vol){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain();o.type='triangle';o.frequency.value=f;g.gain.value=vol||.04;o.connect(g);g.connect(ac.destination);o.start();g.gain.exponentialRampToValueAtTime(.0001,ac.currentTime+d);o.stop(ac.currentTime+d)}catch(e){}}
-let ringI=null;
-function ringStart(){ringStop();const r=()=>{beep(880,.25,.12);setTimeout(()=>beep(1175,.3,.12),280)};r();ringI=setInterval(r,1600)}
-function ringStop(){clearInterval(ringI);ringI=null}
-
-function go(v){S.v=v;S.sel=0;if(v==='find'){S.digits='';S.found=null;S.msg=''}render()}
-function move(d,n){if(!n)return;S.sel=(S.sel+d+n)%n;render()}
-
-function key(k){
-  const v=S.v;
-  if(v==='auth'){
-    if(k==='left'||k==='right'||k==='sr'){S.mode=S.mode==='login'?'reg':'login';S.msg='';render()}
-    else if(k==='ok'||k==='sl'||k==='call')auth();
-    return;
-  }
-  if(v==='incoming'){if(k==='call'||k==='ok'||k==='sl')accept();else if(k==='end'||k==='sr'){endCall('Сброшено')}return}
-  if(v==='calling'||v==='incall'){if(k==='end'||k==='sr')endCall('Сброшено');return}
-  if(k==='end'){go('menu');return}
-  if(v==='menu'){
-    if(k==='up')move(-1,MENU.length);else if(k==='down')move(1,MENU.length);
-    else if(k==='ok'||k==='sl'){[()=>go('contacts'),()=>go('find'),()=>go('profile'),logout][S.sel]()}
-    else if(/^[1-4]$/.test(k)){S.sel=+k-1;key('ok')}
-  }else if(v==='contacts'){
-    const n=me.contacts.length;
-    if(k==='up')move(-1,n);else if(k==='down')move(1,n);
-    else if((k==='ok'||k==='sl'||k==='call')&&n)dial(me.contacts[S.sel]);
-    else if(k==='*'&&n){const c=me.contacts.splice(S.sel,1)[0];save();S.sel=0;render();flash(c.nick+' удалён')}
-    else if(k==='sr')go('menu');
-  }else if(v==='find'){
-    if(/^\d$/.test(k)&&S.digits.length<6){S.digits+=k;S.found=null;S.msg='';render()}
-    else if(k==='sr'||k==='*'){if(S.digits){S.digits=S.digits.slice(0,-1);S.found=null;S.msg='';render()}else go('menu')}
-    else if(k==='ok'||k==='sl'||k==='call'){
-      if(S.found){addContact(S.found.id,S.found.nick);flash(S.found.nick+' в контактах');go('contacts')}else search();
-    }
-  }else if(v==='profile'){if(k==='ok'||k==='sl'||k==='sr')go('menu')}
-}
-
-document.querySelectorAll('[data-k]').forEach(b=>b.addEventListener('click',()=>{beep(1400,.06);key(b.dataset.k)}));
-scr.addEventListener('click',e=>{
-  const li=e.target.closest('li[data-i]');if(li){S.sel=+li.dataset.i;key('ok');return}
-  const m=e.target.closest('[data-m]');if(m&&m.dataset.m!==S.mode){S.mode=m.dataset.m;S.msg='';render()}
-});
-const KEYMAP={ArrowUp:'up',ArrowDown:'down',ArrowLeft:'left',ArrowRight:'right',Enter:'ok',Escape:'sr',Backspace:'sr'};
-document.addEventListener('keydown',e=>{
-  if(e.target.tagName==='INPUT'){if(e.key==='Enter'){e.preventDefault();auth()}return}
-  const k=KEYMAP[e.key]||(/^[\d*#]$/.test(e.key)?e.key:null);
-  if(!k)return;e.preventDefault();
-  const b=document.querySelector(`[data-k="${k}"]`);if(b){b.classList.add('p');setTimeout(()=>b.classList.remove('p'),120)}
-  key(k);
-});
-const clock=()=>{const d=new Date();$('#clock').textContent=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')};
-clock();setInterval(clock,15000);
-
-if(me){go('menu');startPeer()}else render();
+window.addEventListener('pagehide',()=>{if(!leaving){try{host&&host.destroy()}catch(e){}try{me&&me.destroy()}catch(e){}}});
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&!leaving&&me&&me.disconnected){try{me.reconnect()}catch(e){}}});
 }
 </script>
 </body>
