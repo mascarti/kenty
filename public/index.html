@@ -2,125 +2,319 @@
 <html lang="ru">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0e1013">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Кентофон">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b0906">
+<title>Кентофон</title>
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="apple-touch-icon" href="/icon-180.png">
 <link rel="icon" href="/icon-192.png">
-<title>Кентофон</title>
-<link rel="stylesheet" href="/style.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800&family=Manrope:wght@500;700&display=swap" rel="stylesheet">
+<style>
+/* VOICE: дерзко и дорого, голосовая тусовка своих
+   IDEA: голосовая комната как в дискорде, только золотая
+   PICTURE: плитки участников с золотым кольцом, которое светится, когда человек говорит
+   COLOUR/TYPE: почти чёрный, золото, белый текст; Unbounded + Manrope
+   LAYOUT: лобби — одна карточка по центру; комната — код сверху, плитки, панель снизу */
+:root{color-scheme:dark;--bg:#0b0906;--card:rgba(255,236,190,.05);--line:rgba(245,215,122,.16);--ink:#f7f1e3;--dim:#a99c7e;
+--gold:linear-gradient(135deg,#8a6414 0%,#f9e08b 22%,#c99a2e 45%,#fff3c4 58%,#c4921f 78%,#f5d77a 100%);--g:#f2cc5d;--red:#ff5a4a;--ok:#7be07f}
+*{box-sizing:border-box;min-width:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{margin:0;background:radial-gradient(ellipse 80% 60% at 50% -10%,rgba(242,204,93,.22),transparent 60%),radial-gradient(ellipse 60% 50% at 100% 110%,rgba(242,204,93,.08),transparent 60%),var(--bg);
+color:var(--ink);font:16px/1.5 Manrope,system-ui,sans-serif;overflow-x:clip}
+button,input{font:inherit;color:inherit}
+.wrap{min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:max(24px,env(safe-area-inset-top)) 16px 24px}
+.logo{font:800 clamp(34px,8vw,52px)/1.05 Unbounded,sans-serif;letter-spacing:-.02em;background:var(--gold);-webkit-background-clip:text;background-clip:text;color:transparent;margin:0 0 6px;text-align:center}
+.sub{color:var(--dim);text-align:center;margin:0 0 26px}
+.card{width:min(420px,100%);padding:22px;border-radius:28px;background:var(--card);border:1px solid var(--line);backdrop-filter:blur(18px);box-shadow:0 30px 80px rgba(0,0,0,.5)}
+label{display:block;font-size:13px;color:var(--dim);margin:0 0 6px}
+input{width:100%;height:52px;padding:0 16px;border-radius:16px;border:1px solid var(--line);background:rgba(0,0,0,.35);font-size:17px;outline:none;transition:border-color .2s}
+input:focus{border-color:var(--g);box-shadow:0 0 0 3px rgba(242,204,93,.15)}
+#code{text-transform:uppercase;letter-spacing:.3em;font:800 20px Unbounded,sans-serif;text-align:center}
+.btn{position:relative;overflow:hidden;width:100%;height:54px;border:0;border-radius:16px;cursor:pointer;font-weight:700;font-size:16px;transition:transform .08s,filter .2s}
+.btn:active{transform:scale(.98)}
+.gold{background:var(--gold);color:#2a1c02;box-shadow:0 10px 30px rgba(242,204,93,.25),inset 0 1px 0 rgba(255,255,255,.7)}
+.gold::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 35%,rgba(255,255,255,.6) 50%,transparent 65%);transform:translateX(-100%);animation:sh 3.5s ease-in-out infinite}
+@keyframes sh{60%,100%{transform:translateX(100%)}}
+.ghost{background:rgba(255,255,255,.06);border:1px solid var(--line)}
+.row{display:flex;gap:10px}.row>*{flex:1}
+.gap{height:14px}
+.or{display:flex;align-items:center;gap:12px;color:var(--dim);font-size:13px;margin:18px 0}.or::before,.or::after{content:"";flex:1;height:1px;background:var(--line)}
+.err{color:var(--red);font-size:14px;min-height:20px;margin-top:10px;text-align:center}
+.last{margin-top:14px;text-align:center;font-size:14px;color:var(--dim)}.last button{background:none;border:0;color:var(--g);cursor:pointer;font-weight:700;padding:6px}
+/* комната */
+.room{width:min(900px,100%);min-height:100%;display:flex;flex-direction:column;padding:max(16px,env(safe-area-inset-top)) 16px 0}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:6px 0 18px}
+.rc{display:flex;align-items:center;gap:12px}
+.rc .lbl{font-size:13px;color:var(--dim)}
+.rc .cd{font:800 28px/1 Unbounded,sans-serif;letter-spacing:.14em;background:var(--gold);-webkit-background-clip:text;background-clip:text;color:transparent}
+.chip{height:40px;padding:0 14px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.05);cursor:pointer;font-size:14px;font-weight:700;color:var(--ink)}
+.st{font-size:14px;color:var(--dim);display:flex;align-items:center;gap:8px}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--dim)}.dot.on{background:var(--ok);box-shadow:0 0 10px var(--ok)}.dot.wait{background:var(--g);animation:bl 1s infinite}
+@keyframes bl{50%{opacity:.3}}
+.grid{flex:1;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(200px,44%),1fr));gap:14px;align-content:start;padding-bottom:120px}
+.tile{--lvl:0;position:relative;aspect-ratio:1/1.05;border-radius:26px;background:var(--card);border:1px solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:14px;transition:border-color .15s}
+.tile.talk{border-color:rgba(242,204,93,.7)}
+.av{position:relative;width:min(96px,52%);aspect-ratio:1;border-radius:50%;background:var(--gold);display:grid;place-items:center;font:800 clamp(26px,6vw,36px) Unbounded,sans-serif;color:#2a1c02;
+box-shadow:0 0 0 calc(var(--lvl)*10px) rgba(242,204,93,.25),0 0 calc(var(--lvl)*40px) rgba(242,204,93,.6);transition:box-shadow .08s}
+.nm{font-weight:700;font-size:17px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ps{font-size:13px;color:var(--dim)}.ps.ok{color:var(--ok)}.ps.bad{color:var(--red)}
+.mute-badge{position:absolute;top:12px;right:12px;width:30px;height:30px;border-radius:50%;background:var(--red);display:grid;place-items:center}
+.mute-badge svg{width:16px;height:16px;fill:#fff}
+.empty{grid-column:1/-1;text-align:center;color:var(--dim);padding:20px;border:1px dashed var(--line);border-radius:22px}
+.bar{position:fixed;left:50%;bottom:max(18px,env(safe-area-inset-bottom));transform:translateX(-50%);display:flex;gap:12px;padding:10px;border-radius:24px;background:rgba(20,16,10,.8);border:1px solid var(--line);backdrop-filter:blur(18px);box-shadow:0 20px 50px rgba(0,0,0,.6)}
+.rb{width:62px;height:56px;border-radius:18px;border:0;cursor:pointer;display:grid;place-items:center;background:rgba(255,255,255,.08)}
+.rb svg{width:26px;height:26px;fill:var(--ink)}
+.rb.off{background:var(--red)}
+.rb.leave{background:var(--red);width:84px}
+.toast{position:fixed;left:50%;top:max(16px,env(safe-area-inset-top));transform:translate(-50%,-160%);opacity:0;padding:10px 18px;border-radius:14px;background:var(--gold);color:#2a1c02;font-weight:700;transition:transform .3s,opacity .3s;z-index:9;max-width:90vw;text-align:center}
+.toast.on{transform:translate(-50%,0);opacity:1}
+.tap{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;place-items:center;z-index:8}.tap.on{display:grid}
+button:focus-visible{outline:2px solid var(--g);outline-offset:3px}
+[hidden]{display:none!important}
+@media(prefers-reduced-motion:reduce){.gold::after,.dot.wait{animation:none}}
+</style>
 </head>
 <body>
+<div class="toast" id="toast"></div>
+<div class="tap" id="tap"><button class="btn gold" style="width:auto;padding:0 28px">Включить звук</button></div>
 
-<!-- ВХОД / РЕГИСТРАЦИЯ -->
-<section id="auth" class="screen" data-mode="login" hidden>
-  <div class="auth-box">
-    <div class="logo"><span class="logo-dot"></span>КЕНТОФОН</div>
-    <p class="sub">Звони своим по ID. Без номера, без мессенджеров.</p>
-    <div class="tabs" role="tablist">
-      <button type="button" class="tab" data-mode="login">Вход</button>
-      <button type="button" class="tab" data-mode="register">Регистрация</button>
-    </div>
-    <form id="auth-form" autocomplete="on">
-      <label>Логин<input id="a-login" name="username" autocomplete="username" autocapitalize="none" spellcheck="false" required minlength="3" maxlength="24"></label>
-      <label>Пароль<input id="a-pass" name="password" type="password" autocomplete="current-password" required minlength="4"></label>
-      <label class="reg-only">Ник (как тебя видят друзья)<input id="a-nick" name="nickname" maxlength="24" placeholder="например, Тёма"></label>
-      <p id="a-err" class="err" role="alert"></p>
-      <button id="a-submit" class="btn primary" type="submit">Войти</button>
-    </form>
-  </div>
-</section>
-
-<!-- ГЛАВНЫЙ ЭКРАН -->
-<section id="main" class="screen" hidden>
-  <div id="net" class="net" hidden>Подключаюсь к серверу…</div>
-  <header class="top">
-    <div class="logo small"><span class="logo-dot"></span>КЕНТОФОН</div>
-    <button id="open-settings" class="ib ghost" aria-label="Настройки"><svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.49.49 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.48.48 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.49.49 0 0 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32a.49.49 0 0 0-.12-.61l-2.01-1.58zM12 15.6A3.6 3.6 0 1 1 12 8.4a3.6 3.6 0 0 1 0 7.2z"/></svg></button>
-  </header>
-
-  <div class="me card">
-    <span id="me-ava" class="ava lg"></span>
-    <div class="me-text">
-      <b id="me-nick"></b>
-      <span class="muted">Твой ID</span>
-      <button id="copy-id" class="my-id" aria-label="Скопировать ID"><span id="me-id"></span><svg viewBox="0 0 24 24"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg></button>
-    </div>
-    <button id="invite" class="btn soft">Позвать друга</button>
-  </div>
-
-  <form id="find" class="find card" autocomplete="off">
-    <label for="find-id" class="muted">Найти друга по ID</label>
-    <div class="find-row">
-      <input id="find-id" inputmode="numeric" pattern="[0-9 ]*" maxlength="7" placeholder="Например 482913">
-      <button class="btn primary" type="submit">Найти</button>
-    </div>
-    <div id="found"></div>
-  </form>
-
-  <h3 class="list-title">Контакты</h3>
-  <ul id="contacts" class="contacts"></ul>
-</section>
-
-<!-- НАСТРОЙКИ -->
-<dialog id="settings">
-  <form id="settings-form" method="dialog">
-    <h3>Настройки</h3>
-    <label>Ник<input id="s-nick" maxlength="24" required></label>
-    <p class="muted" id="s-login"></p>
+<main class="wrap" id="lobby">
+  <h1 class="logo">Кентофон</h1>
+  <p class="sub">Создал комнату, скинул код — и вы на связи</p>
+  <div class="card">
+    <label for="nick">Твой ник</label>
+    <input id="nick" maxlength="20" placeholder="Как тебя звать" autocomplete="nickname">
+    <div class="gap"></div>
+    <button class="btn gold" id="create">Создать комнату</button>
+    <div class="or">или зайти по коду</div>
     <div class="row">
-      <button type="button" id="s-close" class="btn soft">Закрыть</button>
-      <button type="submit" id="s-save" class="btn primary">Сохранить</button>
+      <input id="code" maxlength="5" placeholder="КОД" autocomplete="off" autocapitalize="characters" spellcheck="false">
+      <button class="btn ghost" id="join" style="flex:0 0 120px">Войти</button>
     </div>
-    <button type="button" id="logout" class="btn danger-text">Выйти из аккаунта</button>
-  </form>
-</dialog>
-
-<!-- ВХОДЯЩИЙ ЗВОНОК -->
-<section id="incoming" class="overlay" hidden>
-  <div class="i-top">
-    <span id="i-ava" class="ava xl pulse"></span>
-    <h2 id="i-nick"></h2>
-    <p id="i-type" class="muted"></p>
+    <div class="err" id="err"></div>
+    <div class="last" id="last" hidden></div>
   </div>
-  <div class="i-bar">
-    <div><button id="i-no" class="round red big" aria-label="Сбросить"><svg viewBox="0 0 24 24"><path d="M12 9c-1.6 0-3.15.25-4.6.72v3.1c0 .39-.23.74-.56.9-.98.49-1.87 1.12-2.66 1.85-.18.18-.43.28-.7.28-.28 0-.53-.11-.71-.29L.29 13.08a.96.96 0 0 1 0-1.41C3.34 8.78 7.46 7 12 7s8.66 1.78 11.71 4.67a.99.99 0 0 1 0 1.42l-2.48 2.48c-.18.18-.43.29-.71.29-.27 0-.52-.11-.7-.28a11.27 11.27 0 0 0-2.67-1.85.996.996 0 0 1-.56-.9v-3.1C15.15 9.25 13.6 9 12 9z"/></svg></button><span>Сбросить</span></div>
-    <div><button id="i-yes" class="round green big" aria-label="Принять"><svg viewBox="0 0 24 24"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1l-2.3 2.2z"/></svg></button><span>Принять</span></div>
+</main>
+
+<section class="room" id="room" hidden>
+  <div class="top">
+    <div class="rc"><div><div class="lbl">Код комнаты</div><div class="cd" id="rcode"></div></div>
+      <button class="chip" id="copy">Скопировать</button></div>
+    <div class="st"><span class="dot wait" id="sdot"></span><span id="stxt">Подключаюсь…</span></div>
+  </div>
+  <div class="grid" id="grid"></div>
+  <div class="bar">
+    <button class="rb" id="mute" aria-label="Микрофон"></button>
+    <button class="rb leave" id="leave" aria-label="Выйти"><svg viewBox="0 0 24 24"><path d="M12 9c-1.6 0-3.15.25-4.6.72v3.1a1 1 0 0 1-.56.9 11.5 11.5 0 0 0-2.66 1.85 1 1 0 0 1-1.4 0L.29 13.08a1 1 0 0 1 0-1.41A16.9 16.9 0 0 1 12 7c4.5 0 8.6 1.75 11.71 4.67a1 1 0 0 1 0 1.41l-2.48 2.49a1 1 0 0 1-1.4 0 11.3 11.3 0 0 0-2.67-1.85 1 1 0 0 1-.56-.9v-3.1A14.8 14.8 0 0 0 12 9z"/></svg></button>
   </div>
 </section>
-
-<!-- ЭКРАН ЗВОНКА -->
-<section id="call" class="overlay" hidden>
-  <video id="r-video" autoplay playsinline muted></video>
-  <audio id="r-audio" autoplay playsinline></audio>
-  <div class="c-info">
-    <span id="c-ava" class="ava xl"></span>
-    <h2 id="c-nick"></h2>
-    <p id="c-status"></p>
-    <p id="c-note" class="note" hidden>Микрофон у друга выключен</p>
-  </div>
-  <video id="l-video" autoplay playsinline muted hidden></video>
-  <div class="c-bar">
-    <button id="c-mic" class="round glass" aria-label="Микрофон">
-      <svg class="on" viewBox="0 0 24 24"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/></svg>
-      <svg class="off" viewBox="0 0 24 24"><path d="M19 11h-1.7c0 .74-.16 1.43-.43 2.05l1.23 1.23c.56-.98.9-2.09.9-3.28zm-4.02.17V5a3 3 0 0 0-6 0v.18l5.98 5.99zM4.27 3 3 4.27l6.01 6.01V11a3 3 0 0 0 3.64 2.92l1.66 1.66c-.71.33-1.5.52-2.31.52-2.76 0-5.3-2.1-5.3-5.1H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c.91-.13 1.77-.45 2.54-.9L19.73 21 21 19.73 4.27 3z"/></svg>
-    </button>
-    <button id="c-cam" class="round glass" aria-label="Камера">
-      <svg class="on" viewBox="0 0 24 24"><path d="M17 10.5V7a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-3.5l4 4v-11l-4 4z"/></svg>
-      <svg class="off" viewBox="0 0 24 24"><path d="m21 6.5-4 4V7a1 1 0 0 0-1-1H9.82L21 17.18V6.5zM3.27 2 2 3.27 4.73 6H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12c.21 0 .39-.08.54-.18L19.73 21 21 19.73 3.27 2z"/></svg>
-    </button>
-    <button id="c-flip" class="round glass" aria-label="Сменить камеру" hidden><svg viewBox="0 0 24 24"><path d="m19 8-4 4h3a6 6 0 0 1-8.8 5.3l-1.46 1.46A8 8 0 0 0 20 12h3l-4-4zM6 12a6 6 0 0 1 8.8-5.3l1.46-1.46A8 8 0 0 0 4 12H1l4 4 4-4H6z"/></svg></button>
-    <button id="c-end" class="round red" aria-label="Завершить"><svg viewBox="0 0 24 24"><path d="M12 9c-1.6 0-3.15.25-4.6.72v3.1c0 .39-.23.74-.56.9-.98.49-1.87 1.12-2.66 1.85-.18.18-.43.28-.7.28-.28 0-.53-.11-.71-.29L.29 13.08a.96.96 0 0 1 0-1.41C3.34 8.78 7.46 7 12 7s8.66 1.78 11.71 4.67a.99.99 0 0 1 0 1.42l-2.48 2.48c-.18.18-.43.29-.71.29-.27 0-.52-.11-.7-.28a11.27 11.27 0 0 0-2.67-1.85.996.996 0 0 1-.56-.9v-3.1C15.15 9.25 13.6 9 12 9z"/></svg></button>
-  </div>
-</section>
-
-<div id="toast" class="toast" role="status" hidden></div>
 
 <script src="/vendor/socket.io.min.js"></script>
-<script src="/app.js"></script>
+<script>
+{
+const $=s=>document.querySelector(s);
+const esc=t=>String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const AL='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+const RELAY=/[?&]relay\b/.test(location.search);
+const MIC_ON='<svg viewBox="0 0 24 24"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-3.08A7 7 0 0 0 19 11z"/></svg>';
+const MIC_OFF='<svg viewBox="0 0 24 24"><path d="M19 11h-2c0 .74-.16 1.43-.43 2.05l1.46 1.46A6.9 6.9 0 0 0 19 11zM15 11V5a3 3 0 0 0-5.94-.6L15 10.33zM4.27 3 3 4.27l6 6V11a3 3 0 0 0 4.53 2.58l1.65 1.65A5 5 0 0 1 7 11H5a7 7 0 0 0 6 6.92V21h2v-3.08a6.9 6.9 0 0 0 2.6-.9L19.73 21 21 19.73z"/></svg>';
+const ls={get:k=>{try{return localStorage.getItem(k)}catch(e){return null}},set:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}}};
+const ss={get:k=>{try{return sessionStorage.getItem(k)}catch(e){return null}},set:(k,v)=>{try{sessionStorage.setItem(k,v)}catch(e){}}};
+
+let nick='',code='',sock=null,local=null,muted=false,leaving=true,ac=null,ice=null;
+let cid=ss.get('kf_cid');
+if(!cid||!/^[a-z0-9]{8,32}$/.test(cid)){cid=Array.from(crypto.getRandomValues(new Uint8Array(12)),b=>'abcdefghijklmnopqrstuvwxyz0123456789'[b%36]).join('');ss.set('kf_cid',cid)}
+const peers=new Map(); // cid -> {id,nick,muted,pc,state,audio,an,lvl,making,ignore,rt}
+const self={an:null,lvl:0};
+if(/[?&]debug\b/.test(location.search))window.__kf=peers;
+
+let toastT;function toast(t){const el=$('#toast');el.textContent=t;el.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('on'),2400)}
+const err=t=>$('#err').textContent=t;
+function status(t,s){$('#stxt').textContent=t;$('#sdot').className='dot '+(s||'')}
+const newCode=()=>Array.from({length:5},()=>AL[Math.floor(Math.random()*AL.length)]).join('');
+const clean=c=>String(c||'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,5);
+
+/* ---------- лобби ---------- */
+$('#nick').value=ls.get('kf_nick')||'';
+const hc=clean(location.hash.slice(1));if(hc.length===5)$('#code').value=hc;
+const lastC=ls.get('kf_last');
+if(lastC&&lastC!==hc){$('#last').hidden=false;$('#last').innerHTML='Последняя комната: <button id="lastbtn">'+esc(lastC)+' — зайти</button>';$('#lastbtn').onclick=()=>{$('#code').value=lastC;enter(lastC)}}
+$('#code').addEventListener('input',e=>{e.target.value=clean(e.target.value)});
+$('#code').addEventListener('keydown',e=>{if(e.key==='Enter')$('#join').click()});
+$('#create').onclick=()=>enter(newCode());
+$('#join').onclick=()=>{const c=clean($('#code').value);if(c.length!==5)return err('Код — 5 символов');enter(c)};
+
+async function enter(c){
+  nick=$('#nick').value.trim().slice(0,20);
+  if(!nick){err('Впиши ник');$('#nick').focus();return}
+  if(typeof io==='undefined')return err('Нет интернета, обнови страницу');
+  if(!window.RTCPeerConnection)return err('Браузер не умеет звонки, открой в Chrome или Safari');
+  err('');ls.set('kf_nick',nick);
+  try{local=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}})}
+  catch(e){return err('Разреши доступ к микрофону')}
+  try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();ac.resume()}catch(e){}
+  code=c;leaving=false;muted=false;ls.set('kf_last',code);
+  try{history.replaceState(null,'',location.pathname+location.search+'#'+code)}catch(e){location.hash=code}
+  $('#lobby').hidden=true;$('#room').hidden=false;$('#rcode').textContent=code;
+  meter(self,local);renderMute();render();status('Подключаюсь…','wait');
+  connect();
+}
+
+/* ---------- сервер (только чтобы найти друг друга) ---------- */
+function connect(){
+  if(sock){sock.connect();return}
+  sock=io('/rooms',{transports:['websocket','polling'],reconnectionDelay:500,reconnectionDelayMax:3000});
+  sock.on('connect',join);
+  sock.on('disconnect',()=>{if(!leaving)status('Сеть моргнула, переподключаюсь… звук идёт','wait')});
+  sock.on('connect_error',()=>{if(!leaving)status('Нет связи с сервером, пробую ещё…','wait')});
+  sock.on('peer-join',p=>{if(leaving)return;const x=addPeer(p);if(x)toast(x.nick+' зашёл');render()});
+  sock.on('peer-update',p=>{if(leaving)return;addPeer(p);render()});
+  sock.on('peer-leave',d=>{const x=peers.get(d&&d.id);if(!x)return;toast(x.nick+' вышел');drop(x.id);render()});
+  sock.on('signal',onSignal);
+}
+function join(){
+  if(leaving)return;
+  sock.emit('join',{code,cid,nick,muted},res=>{
+    if(leaving)return;
+    if(!res||res.error){status(res&&res.error||'Ошибка входа','');return}
+    ice=Object.assign({},res.ice||{});if(RELAY)ice.iceTransportPolicy='relay';
+    status('Ты в комнате','on');
+    const ids=new Set((res.peers||[]).map(p=>String(p.id)));
+    for(const id of [...peers.keys()])if(!ids.has(id)&&peers.get(id).state!=='ok')drop(id);
+    for(const p of res.peers||[])addPeer(p);
+    render();
+  });
+}
+const send=(to,data)=>{if(sock&&sock.connected)sock.emit('signal',{to,data})};
+
+/* ---------- WebRTC ----------
+   Звонит всегда тот, у кого cid меньше (initiator), второй только отвечает — никаких столкновений.
+   gen — номер «сеанса» соединения: если кто-то перезагрузил страницу, соединение пересоздаётся. */
+const isInit=id=>cid<id;
+const rnd=()=>Math.random().toString(36).slice(2,10);
+function addPeer(p,quiet){
+  const id=String(p.id||'');if(!id||id===cid)return null;
+  let x=peers.get(id);
+  if(x){x.nick=String(p.nick||x.nick).slice(0,20);x.muted=!!p.muted;return x}
+  const a=new Audio();a.autoplay=true;a.setAttribute('playsinline','');
+  x={id,nick:String(p.nick||'Кент').slice(0,20),muted:!!p.muted,pc:null,gen:'',state:'conn',audio:a,an:null,lvl:0,rt:null,q:null};
+  peers.set(id,x);
+  if(isInit(id))makePc(x,rnd());else if(!quiet)send(id,{reset:1}); // «я тут, звони мне»
+  return x;
+}
+function makePc(x,gen){
+  if(x.pc){try{x.pc.close()}catch(e){}}
+  const pc=new RTCPeerConnection(ice||{});x.pc=pc;x.gen=gen;x.state='conn';
+  const init=isInit(x.id);
+  if(init)local.getTracks().forEach(t=>pc.addTrack(t,local));
+  pc.onnegotiationneeded=async()=>{
+    if(!init||x.pc!==pc)return;
+    try{await pc.setLocalDescription();send(x.id,{gen,sdp:{type:pc.localDescription.type,sdp:pc.localDescription.sdp}})}catch(e){console.warn(e)}
+  };
+  pc.onicecandidate=e=>{if(e.candidate&&x.pc===pc)send(x.id,{gen,ice:e.candidate.toJSON()})};
+  pc.ontrack=e=>{
+    const s=e.streams[0]||new MediaStream([e.track]);
+    if(x.audio.srcObject!==s){x.audio.srcObject=s;x.audio.play().catch(()=>$('#tap').classList.add('on'));meter(x,s)}
+  };
+  pc.onconnectionstatechange=()=>{
+    if(x.pc!==pc)return;
+    const st=pc.connectionState;clearTimeout(x.rt);
+    if(st==='connected')x.state='ok';
+    else if(st==='disconnected'){x.state='lost';x.rt=setTimeout(()=>restart(x),3000)}
+    else if(st==='failed'){x.state='bad';restart(x)}
+    render();
+  };
+  // не соединилось за 15 сек — пересоздаём
+  setTimeout(()=>{if(x.pc===pc&&pc.connectionState!=='connected'&&peers.get(x.id)===x)restart(x)},15000);
+  return pc;
+}
+function restart(x){
+  if(leaving||peers.get(x.id)!==x||(x.pc&&x.pc.connectionState==='connected'))return;
+  clearTimeout(x.rt);
+  if(isInit(x.id)){
+    if(x.pc&&x.pc.connectionState==='disconnected'){try{x.pc.restartIce()}catch(e){makePc(x,rnd())}}
+    else makePc(x,rnd());
+  }else send(x.id,{reset:1});
+  x.rt=setTimeout(()=>restart(x),12000);
+}
+function onSignal(m){
+  if(leaving||!m||!m.data)return;
+  const from=String(m.from||'');let x=peers.get(from);
+  if(!x)x=addPeer({id:from,nick:'…'},true);if(!x)return;
+  x.q=(x.q||Promise.resolve()).then(()=>handle(x,m.data)).catch(e=>console.warn(e));
+}
+async function handle(x,d){
+  if(d.reset){if(isInit(x.id))makePc(x,rnd());return} // второй просит (пере)создать соединение
+  if(d.sdp){
+    if(d.sdp.type==='offer'){
+      if(isInit(x.id))return;
+      let pc=x.pc;
+      if(!pc||x.gen!==d.gen){pc=makePc(x,d.gen);await pc.setRemoteDescription(d.sdp);local.getTracks().forEach(t=>pc.addTrack(t,local))}
+      else await pc.setRemoteDescription(d.sdp);
+      await pc.setLocalDescription();
+      send(x.id,{gen:x.gen,sdp:{type:pc.localDescription.type,sdp:pc.localDescription.sdp}});
+    }else if(d.sdp.type==='answer'){
+      if(x.pc&&x.gen===d.gen&&x.pc.signalingState==='have-local-offer')await x.pc.setRemoteDescription(d.sdp);
+    }
+  }else if(d.ice){
+    if(x.pc&&x.gen===d.gen){try{await x.pc.addIceCandidate(d.ice)}catch(e){}}
+  }
+}
+function drop(id){
+  const x=peers.get(id);if(!x)return;
+  clearTimeout(x.rt);try{x.pc&&x.pc.close()}catch(e){}
+  x.audio.srcObject=null;peers.delete(id);
+}
+
+/* ---------- кто говорит ---------- */
+function meter(p,s){try{if(!ac)return;const src=ac.createMediaStreamSource(s),an=ac.createAnalyser();an.fftSize=512;src.connect(an);p.an=an}catch(e){}}
+const buf=new Uint8Array(512);
+function level(p,off){
+  if(!p.an)return;p.an.getByteTimeDomainData(buf);let sum=0;for(let i=0;i<buf.length;i++){const v=(buf[i]-128)/128;sum+=v*v}
+  const l=off?0:Math.min(1,Math.sqrt(sum/buf.length)*6);p.lvl=p.lvl*.7+l*.3;
+}
+function loop(){
+  if(!leaving){
+    level(self,muted);paint('self',self.lvl);
+    for(const [id,p] of peers){level(p,p.muted);paint(id,p.lvl)}
+  }
+  requestAnimationFrame(loop);
+}
+function paint(id,l){const el=document.querySelector(`.tile[data-id="${CSS.escape(id)}"]`);if(el){el.style.setProperty('--lvl',l.toFixed(2));el.classList.toggle('talk',l>.12)}}
+requestAnimationFrame(loop);
+
+/* ---------- отрисовка ---------- */
+const ST={conn:['соединяюсь…',''],ok:['на связи','ok'],lost:['связь моргнула, чиню…',''],bad:['пробиваюсь…','bad']};
+function tile(id,name,st,isMe,m){
+  const s=ST[st]||ST.conn;
+  return `<div class="tile" data-id="${esc(id)}">${m?'<div class="mute-badge">'+MIC_OFF+'</div>':''}
+    <div class="av">${esc((name||'?').trim().charAt(0).toUpperCase()||'?')}</div>
+    <div class="nm">${esc(name||'Кент')}${isMe?' (ты)':''}</div>
+    <div class="ps ${isMe?'ok':s[1]}">${isMe?(muted?'микрофон выключен':'это ты'):(m&&st==='ok'?'микрофон выключен':s[0])}</div></div>`;
+}
+function render(){
+  const list=[...peers.values()];
+  $('#grid').innerHTML=tile('self',nick,'ok',true,muted)+list.map(x=>tile(x.id,x.nick,x.state,false,x.muted)).join('')+
+    (list.length?'':'<div class="empty">Пока никого. Скинь Кенту код <b>'+esc(code)+'</b> — или ссылку кнопкой «Скопировать»</div>');
+}
+function renderMute(){$('#mute').innerHTML=muted?MIC_OFF:MIC_ON;$('#mute').classList.toggle('off',muted)}
+$('#mute').onclick=()=>{muted=!muted;if(local)local.getAudioTracks().forEach(t=>t.enabled=!muted);if(sock)sock.emit('mute',muted);renderMute();render()};
+$('#copy').onclick=async()=>{
+  const link=location.origin+location.pathname+'#'+code;
+  try{await navigator.clipboard.writeText('Залетай в Кентофон, код комнаты: '+code+'\n'+link);toast('Код и ссылка скопированы')}
+  catch(e){toast('Код: '+code)}
+};
+$('#tap').onclick=()=>{$('#tap').classList.remove('on');for(const p of peers.values())if(p.audio.srcObject)p.audio.play().catch(()=>{})};
+$('#leave').onclick=()=>{
+  leaving=true;
+  if(sock){sock.emit('leave');sock.disconnect()}
+  for(const id of [...peers.keys()])drop(id);
+  if(local)local.getTracks().forEach(t=>t.stop());local=null;
+  try{history.replaceState(null,'',location.pathname+location.search)}catch(e){}
+  $('#room').hidden=true;$('#lobby').hidden=false;$('#code').value=code;
+};
+}
+</script>
 </body>
 </html>

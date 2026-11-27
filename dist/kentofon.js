@@ -32844,8 +32844,8 @@ var require_cjs3 = __commonJS({
         this.buffers = [];
       }
     };
-    function isNamespaceValid(nsp) {
-      return typeof nsp === "string";
+    function isNamespaceValid(nsp2) {
+      return typeof nsp2 === "string";
     }
     var isInteger = Number.isInteger || function(value) {
       return typeof value === "number" && isFinite(value) && Math.floor(value) === value;
@@ -33630,10 +33630,10 @@ var require_client = __commonJS({
        * @private
        */
       doConnect(name, auth) {
-        const nsp = this.server.of(name);
-        nsp._add(this, auth, (socket) => {
+        const nsp2 = this.server.of(name);
+        nsp2._add(this, auth, (socket) => {
           this.sockets.set(socket.id, socket);
-          this.nsps.set(nsp.name, socket);
+          this.nsps.set(nsp2.name, socket);
           if (this.connectTimeout) {
             clearTimeout(this.connectTimeout);
             this.connectTimeout = void 0;
@@ -33659,9 +33659,9 @@ var require_client = __commonJS({
        */
       _remove(socket) {
         if (this.sockets.has(socket.id)) {
-          const nsp = this.sockets.get(socket.id).nsp.name;
+          const nsp2 = this.sockets.get(socket.id).nsp.name;
           this.sockets.delete(socket.id);
-          this.nsps.delete(nsp);
+          this.nsps.delete(nsp2);
         } else {
           debug("ignoring remove for %s", socket.id);
         }
@@ -33965,9 +33965,9 @@ var require_broadcast_operator = __commonJS({
     var debug_1 = __importDefault(require_src4());
     var debug = (0, debug_1.default)("socket.io:broadcast-operator");
     var BroadcastOperator = class _BroadcastOperator {
-      constructor(adapter, rooms = /* @__PURE__ */ new Set(), exceptRooms = /* @__PURE__ */ new Set(), flags = {}) {
+      constructor(adapter, rooms2 = /* @__PURE__ */ new Set(), exceptRooms = /* @__PURE__ */ new Set(), flags = {}) {
         this.adapter = adapter;
-        this.rooms = rooms;
+        this.rooms = rooms2;
         this.exceptRooms = exceptRooms;
         this.flags = flags;
       }
@@ -33988,13 +33988,13 @@ var require_broadcast_operator = __commonJS({
        * @return a new {@link BroadcastOperator} instance for chaining
        */
       to(room2) {
-        const rooms = new Set(this.rooms);
+        const rooms2 = new Set(this.rooms);
         if (Array.isArray(room2)) {
-          room2.forEach((r) => rooms.add(r));
+          room2.forEach((r) => rooms2.add(r));
         } else {
-          rooms.add(room2);
+          rooms2.add(room2);
         }
-        return new _BroadcastOperator(this.adapter, rooms, this.exceptRooms, this.flags);
+        return new _BroadcastOperator(this.adapter, rooms2, this.exceptRooms, this.flags);
       }
       /**
        * Targets a room when emitting. Similar to `to()`, but might feel clearer in some cases:
@@ -34428,9 +34428,9 @@ var require_socket2 = __commonJS({
        * @param {Object} auth
        * @package
        */
-      constructor(nsp, client, auth, previousSession) {
+      constructor(nsp2, client, auth, previousSession) {
         super();
-        this.nsp = nsp;
+        this.nsp = nsp2;
         this.client = client;
         this.recovered = false;
         this.data = {};
@@ -34438,8 +34438,8 @@ var require_socket2 = __commonJS({
         this.acks = /* @__PURE__ */ new Map();
         this.fns = [];
         this.flags = {};
-        this.server = nsp.server;
-        this.adapter = nsp.adapter;
+        this.server = nsp2.server;
+        this.adapter = nsp2.adapter;
         if (previousSession) {
           this.id = previousSession.sid;
           this.pid = previousSession.pid;
@@ -34454,7 +34454,7 @@ var require_socket2 = __commonJS({
           this.recovered = true;
         } else {
           if (client.conn.protocol === 3) {
-            this.id = nsp.name !== "/" ? nsp.name + "#" + client.id : client.id;
+            this.id = nsp2.name !== "/" ? nsp2.name + "#" + client.id : client.id;
           } else {
             this.id = base64id_1.base64id.generateId();
           }
@@ -34701,9 +34701,9 @@ var require_socket2 = __commonJS({
        * @param {String|Array} rooms - room or array of rooms
        * @return a Promise or nothing, depending on the adapter
        */
-      join(rooms) {
-        debug("join room %s", rooms);
-        return this.adapter.addAll(this.id, new Set(Array.isArray(rooms) ? rooms : [rooms]));
+      join(rooms2) {
+        debug("join room %s", rooms2);
+        return this.adapter.addAll(this.id, new Set(Array.isArray(rooms2) ? rooms2 : [rooms2]));
       }
       /**
        * Leaves a room.
@@ -35865,12 +35865,12 @@ var require_in_memory_adapter = __commonJS({
        *
        * @param nsp
        */
-      constructor(nsp) {
+      constructor(nsp2) {
         super();
-        this.nsp = nsp;
+        this.nsp = nsp2;
         this.rooms = /* @__PURE__ */ new Map();
         this.sids = /* @__PURE__ */ new Map();
-        this.encoder = nsp.server.encoder;
+        this.encoder = nsp2.server.encoder;
       }
       /**
        * To be overridden
@@ -35897,11 +35897,11 @@ var require_in_memory_adapter = __commonJS({
        * @param {Set<Room>} rooms   a set of rooms
        * @public
        */
-      addAll(id, rooms) {
+      addAll(id, rooms2) {
         if (!this.sids.has(id)) {
           this.sids.set(id, /* @__PURE__ */ new Set());
         }
-        for (const room2 of rooms) {
+        for (const room2 of rooms2) {
           this.sids.get(id).add(room2);
           if (!this.rooms.has(room2)) {
             this.rooms.set(room2, /* @__PURE__ */ new Set());
@@ -36034,9 +36034,9 @@ var require_in_memory_adapter = __commonJS({
        *
        * @param {Set<Room>} rooms   the explicit set of rooms to check.
        */
-      sockets(rooms) {
+      sockets(rooms2) {
         const sids = /* @__PURE__ */ new Set();
-        this.apply({ rooms }, (socket) => {
+        this.apply({ rooms: rooms2 }, (socket) => {
           sids.add(socket.id);
         });
         return Promise.resolve(sids);
@@ -36067,9 +36067,9 @@ var require_in_memory_adapter = __commonJS({
        * @param opts - the filters to apply
        * @param rooms - the rooms to join
        */
-      addSockets(opts, rooms) {
+      addSockets(opts, rooms2) {
         this.apply(opts, (socket) => {
-          socket.join(rooms);
+          socket.join(rooms2);
         });
       }
       /**
@@ -36078,9 +36078,9 @@ var require_in_memory_adapter = __commonJS({
        * @param opts - the filters to apply
        * @param rooms - the rooms to leave
        */
-      delSockets(opts, rooms) {
+      delSockets(opts, rooms2) {
         this.apply(opts, (socket) => {
-          rooms.forEach((room2) => socket.leave(room2));
+          rooms2.forEach((room2) => socket.leave(room2));
         });
       }
       /**
@@ -36095,11 +36095,11 @@ var require_in_memory_adapter = __commonJS({
         });
       }
       apply(opts, callback) {
-        const rooms = opts.rooms;
+        const rooms2 = opts.rooms;
         const except = this.computeExceptSids(opts.except);
-        if (rooms.size) {
+        if (rooms2.size) {
           const ids = /* @__PURE__ */ new Set();
-          for (const room2 of rooms) {
+          for (const room2 of rooms2) {
             if (!this.rooms.has(room2))
               continue;
             for (const id of this.rooms.get(room2)) {
@@ -36156,12 +36156,12 @@ var require_in_memory_adapter = __commonJS({
     };
     exports2.Adapter = Adapter;
     var SessionAwareAdapter = class extends Adapter {
-      constructor(nsp) {
-        super(nsp);
-        this.nsp = nsp;
+      constructor(nsp2) {
+        super(nsp2);
+        this.nsp = nsp2;
         this.sessions = /* @__PURE__ */ new Map();
         this.packets = [];
-        this.maxDisconnectionDuration = nsp.server.opts.connectionStateRecovery.maxDisconnectionDuration;
+        this.maxDisconnectionDuration = nsp2.server.opts.connectionStateRecovery.maxDisconnectionDuration;
         const timer = setInterval(() => {
           const threshold = Date.now() - this.maxDisconnectionDuration;
           this.sessions.forEach((session, sessionId) => {
@@ -36939,8 +36939,8 @@ var require_cluster_adapter = __commonJS({
       };
     }
     var ClusterAdapter = class extends in_memory_adapter_1.Adapter {
-      constructor(nsp) {
-        super(nsp);
+      constructor(nsp2) {
+        super(nsp2);
         this.requests = /* @__PURE__ */ new Map();
         this.ackRequests = /* @__PURE__ */ new Map();
         this.uid = randomId();
@@ -37174,7 +37174,7 @@ var require_cluster_adapter = __commonJS({
         }
         super.broadcastWithAck(packet, opts, clientCountCallback, ack);
       }
-      async addSockets(opts, rooms) {
+      async addSockets(opts, rooms2) {
         var _a;
         const onlyLocal = (_a = opts.flags) === null || _a === void 0 ? void 0 : _a.local;
         if (!onlyLocal) {
@@ -37183,16 +37183,16 @@ var require_cluster_adapter = __commonJS({
               type: MessageType.SOCKETS_JOIN,
               data: {
                 opts: encodeOptions(opts),
-                rooms
+                rooms: rooms2
               }
             });
           } catch (e) {
             debug("[%s] error while publishing message: %s", this.uid, e.message);
           }
         }
-        super.addSockets(opts, rooms);
+        super.addSockets(opts, rooms2);
       }
-      async delSockets(opts, rooms) {
+      async delSockets(opts, rooms2) {
         var _a;
         const onlyLocal = (_a = opts.flags) === null || _a === void 0 ? void 0 : _a.local;
         if (!onlyLocal) {
@@ -37201,14 +37201,14 @@ var require_cluster_adapter = __commonJS({
               type: MessageType.SOCKETS_LEAVE,
               data: {
                 opts: encodeOptions(opts),
-                rooms
+                rooms: rooms2
               }
             });
           } catch (e) {
             debug("[%s] error while publishing message: %s", this.uid, e.message);
           }
         }
-        super.delSockets(opts, rooms);
+        super.delSockets(opts, rooms2);
       }
       async disconnectSockets(opts, close) {
         var _a;
@@ -37329,8 +37329,8 @@ var require_cluster_adapter = __commonJS({
     };
     exports2.ClusterAdapter = ClusterAdapter;
     var ClusterAdapterWithHeartbeat = class extends ClusterAdapter {
-      constructor(nsp, opts) {
-        super(nsp);
+      constructor(nsp2, opts) {
+        super(nsp2);
         this.nodesMap = /* @__PURE__ */ new Map();
         this.customRequests = /* @__PURE__ */ new Map();
         this._opts = Object.assign({
@@ -37592,8 +37592,8 @@ var require_parent_namespace = __commonJS({
         this.adapter = new ParentBroadcastAdapter(this);
       }
       emit(ev, ...args) {
-        this.children.forEach((nsp) => {
-          nsp.emit(ev, ...args);
+        this.children.forEach((nsp2) => {
+          nsp2.emit(ev, ...args);
         });
         return true;
       }
@@ -37628,8 +37628,8 @@ var require_parent_namespace = __commonJS({
     ParentNamespace.count = 0;
     var ParentBroadcastAdapter = class extends socket_io_adapter_1.Adapter {
       broadcast(packet, opts) {
-        this.nsp.children.forEach((nsp) => {
-          nsp.adapter.broadcast(packet, opts);
+        this.nsp.children.forEach((nsp2) => {
+          nsp2.adapter.broadcast(packet, opts);
         });
       }
     };
@@ -37654,22 +37654,22 @@ var require_uws = __commonJS({
     var SEPARATOR = "";
     var { addAll, del, broadcast } = socket_io_adapter_1.Adapter.prototype;
     function patchAdapter(app2) {
-      socket_io_adapter_1.Adapter.prototype.addAll = function(id, rooms) {
+      socket_io_adapter_1.Adapter.prototype.addAll = function(id, rooms2) {
         const isNew = !this.sids.has(id);
-        addAll.call(this, id, rooms);
+        addAll.call(this, id, rooms2);
         const socket = this.nsp.sockets.get(id) || this.nsp._preConnectSockets.get(id);
         if (!socket) {
           return;
         }
         if (socket.conn.transport.name === "websocket") {
-          subscribe(this.nsp.name, socket, isNew, rooms);
+          subscribe(this.nsp.name, socket, isNew, rooms2);
           return;
         }
         if (isNew) {
           socket.conn.on("upgrade", () => {
-            const rooms2 = this.sids.get(id);
-            if (rooms2) {
-              subscribe(this.nsp.name, socket, isNew, rooms2);
+            const rooms3 = this.sids.get(id);
+            if (rooms3) {
+              subscribe(this.nsp.name, socket, isNew, rooms3);
             }
           });
         }
@@ -37712,14 +37712,14 @@ var require_uws = __commonJS({
         });
       };
     }
-    function subscribe(namespaceName, socket, isNew, rooms) {
+    function subscribe(namespaceName, socket, isNew, rooms2) {
       const sessionId = socket.conn.id;
       const websocket = socket.conn.transport.socket;
       if (isNew) {
         debug("subscribe connection %s to topic %s", sessionId, namespaceName);
         websocket.subscribe(namespaceName);
       }
-      rooms.forEach((room2) => {
+      rooms2.forEach((room2) => {
         const topic = `${namespaceName}${SEPARATOR}${room2}`;
         debug("subscribe connection %s to topic %s", sessionId, topic);
         websocket.subscribe(topic);
@@ -38031,8 +38031,8 @@ var require_dist2 = __commonJS({
         if (!arguments.length)
           return this._adapter;
         this._adapter = v;
-        for (const nsp of this._nsps.values()) {
-          nsp._initAdapter();
+        for (const nsp2 of this._nsps.values()) {
+          nsp2._initAdapter();
         }
         return this;
       }
@@ -38280,7 +38280,7 @@ var require_dist2 = __commonJS({
           if (typeof name === "function") {
             this.parentNsps.set(name, parentNsp);
           } else {
-            this.parentNsps.set((nsp2, conn, next) => next(null, name.test(nsp2)), parentNsp);
+            this.parentNsps.set((nsp3, conn, next) => next(null, name.test(nsp3)), parentNsp);
             this.parentNamespacesFromRegExp.set(name, parentNsp);
           }
           if (fn) {
@@ -38290,8 +38290,8 @@ var require_dist2 = __commonJS({
         }
         if (String(name)[0] !== "/")
           name = "/" + name;
-        let nsp = this._nsps.get(name);
-        if (!nsp) {
+        let nsp2 = this._nsps.get(name);
+        if (!nsp2) {
           for (const [regex, parentNamespace] of this.parentNamespacesFromRegExp) {
             if (regex.test(name)) {
               debug("attaching namespace %s to parent namespace %s", name, regex);
@@ -38299,15 +38299,15 @@ var require_dist2 = __commonJS({
             }
           }
           debug("initializing namespace %s", name);
-          nsp = new namespace_1.Namespace(this, name);
-          this._nsps.set(name, nsp);
+          nsp2 = new namespace_1.Namespace(this, name);
+          this._nsps.set(name, nsp2);
           if (name !== "/") {
-            this.sockets.emitReserved("new_namespace", nsp);
+            this.sockets.emitReserved("new_namespace", nsp2);
           }
         }
         if (fn)
-          nsp.on("connect", fn);
-        return nsp;
+          nsp2.on("connect", fn);
+        return nsp2;
       }
       /**
        * Closes server connection
@@ -38315,11 +38315,11 @@ var require_dist2 = __commonJS({
        * @param [fn] optional, called as `fn([err])` on error OR all conns closed
        */
       async close(fn) {
-        await Promise.allSettled([...this._nsps.values()].map(async (nsp) => {
-          nsp.sockets.forEach((socket) => {
+        await Promise.allSettled([...this._nsps.values()].map(async (nsp2) => {
+          nsp2.sockets.forEach((socket) => {
             socket._onclose("server shutting down");
           });
-          await nsp.adapter.close();
+          await nsp2.adapter.close();
         }));
         this.engine.close();
         (0, uws_1.restoreAdapter)();
@@ -38911,6 +38911,72 @@ io.on("connection", (socket) => {
       const callId = busy.get(uid);
       if (callId && calls.has(callId)) endCall(calls.get(callId), "lost");
     }, LOST_GRACE));
+  });
+});
+var ROOM_GRACE = 2e4;
+var ROOM_MAX = 12;
+var rooms = /* @__PURE__ */ new Map();
+var nsp = io.of("/rooms");
+function roomLeave(code, cid) {
+  const r = rooms.get(code);
+  if (!r || !r.has(cid)) return;
+  clearTimeout(r.get(cid).timer);
+  r.delete(cid);
+  nsp.to("r:" + code).emit("peer-leave", { id: cid });
+  if (!r.size) rooms.delete(code);
+}
+nsp.on("connection", (socket) => {
+  socket.on("join", (d, ack) => {
+    if (typeof ack !== "function") return;
+    const code = String(d?.code || "").toUpperCase();
+    const cid = String(d?.cid || "");
+    const nick = String(d?.nick || "").trim().slice(0, 20) || "\u041A\u0435\u043D\u0442";
+    if (!/^[A-Z0-9]{5}$/.test(code) || !/^[a-z0-9]{8,32}$/.test(cid)) return ack({ error: "\u041D\u0435\u0432\u0435\u0440\u043D\u044B\u0439 \u043A\u043E\u0434" });
+    if (socket.data.code && (socket.data.code !== code || socket.data.cid !== cid)) roomLeave(socket.data.code, socket.data.cid);
+    let r = rooms.get(code);
+    if (!r) {
+      r = /* @__PURE__ */ new Map();
+      rooms.set(code, r);
+    }
+    const old = r.get(cid);
+    if (!old && r.size >= ROOM_MAX) return ack({ error: "\u041A\u043E\u043C\u043D\u0430\u0442\u0430 \u0437\u0430\u0431\u0438\u0442\u0430 (\u043C\u0430\u043A\u0441\u0438\u043C\u0443\u043C " + ROOM_MAX + ")" });
+    if (old) {
+      clearTimeout(old.timer);
+      old.timer = null;
+      old.sid = socket.id;
+      old.nick = nick;
+    } else r.set(cid, { nick, muted: !!d?.muted, sid: socket.id, timer: null });
+    socket.data.code = code;
+    socket.data.cid = cid;
+    socket.join("r:" + code);
+    const peers = [...r].filter(([id]) => id !== cid).map(([id, v]) => ({ id, nick: v.nick, muted: v.muted }));
+    ack({ ok: true, rejoin: !!old, peers, ice: iceFor("room-" + cid) });
+    socket.to("r:" + code).emit(old ? "peer-update" : "peer-join", { id: cid, nick, muted: r.get(cid).muted });
+  });
+  socket.on("signal", (d) => {
+    const { code, cid } = socket.data;
+    const r = code && rooms.get(code);
+    const t = r && r.get(String(d?.to || ""));
+    if (t && r.has(cid)) nsp.to(t.sid).emit("signal", { from: cid, data: d.data });
+  });
+  socket.on("mute", (m) => {
+    const { code, cid } = socket.data;
+    const e = code && rooms.get(code)?.get(cid);
+    if (!e) return;
+    e.muted = !!m;
+    socket.to("r:" + code).emit("peer-update", { id: cid, nick: e.nick, muted: e.muted });
+  });
+  socket.on("leave", () => {
+    const { code, cid } = socket.data;
+    if (code) roomLeave(code, cid);
+    socket.leave("r:" + code);
+    socket.data.code = null;
+  });
+  socket.on("disconnect", () => {
+    const { code, cid } = socket.data;
+    const e = code && rooms.get(code)?.get(cid);
+    if (!e || e.sid !== socket.id) return;
+    e.timer = setTimeout(() => roomLeave(code, cid), ROOM_GRACE);
   });
 });
 server.listen(PORT, HOST, () => console.log(`\u041A\u0415\u041D\u0422\u041E\u0424\u041E\u041D \u0437\u0430\u043F\u0443\u0449\u0435\u043D: ${HOST}:${PORT}` + (TURN_HOST ? `, TURN ${TURN_HOST}:${TURN_PORT}` : "")));

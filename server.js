@@ -309,4 +309,66 @@ io.on('connection', (socket) => {
   });
 });
 
+// ---------- КОМНАТЫ (как в дискорде: код комнаты и сразу на связи) ----------
+// Без аккаунтов: ник + код. У каждого клиента постоянный cid на время вкладки,
+// поэтому если у человека моргнул интернет, его не выкидывает из комнаты.
+const ROOM_GRACE = 20_000;
+const ROOM_MAX = 12;
+const rooms = new Map(); // code -> Map(cid -> { nick, muted, sid, timer })
+const nsp = io.of('/rooms');
+function roomLeave(code, cid) {
+  const r = rooms.get(code);
+  if (!r || !r.has(cid)) return;
+  clearTimeout(r.get(cid).timer);
+  r.delete(cid);
+  nsp.to('r:' + code).emit('peer-leave', { id: cid });
+  if (!r.size) rooms.delete(code);
+}
+nsp.on('connection', (socket) => {
+  socket.on('join', (d, ack) => {
+    if (typeof ack !== 'function') return;
+    const code = String(d?.code || '').toUpperCase();
+    const cid = String(d?.cid || '');
+    const nick = String(d?.nick || '').trim().slice(0, 20) || 'Кент';
+    if (!/^[A-Z0-9]{5}$/.test(code) || !/^[a-z0-9]{8,32}$/.test(cid)) return ack({ error: 'Неверный код' });
+    if (socket.data.code && (socket.data.code !== code || socket.data.cid !== cid)) roomLeave(socket.data.code, socket.data.cid);
+    let r = rooms.get(code);
+    if (!r) { r = new Map(); rooms.set(code, r); }
+    const old = r.get(cid);
+    if (!old && r.size >= ROOM_MAX) return ack({ error: 'Комната забита (максимум ' + ROOM_MAX + ')' });
+    if (old) { clearTimeout(old.timer); old.timer = null; old.sid = socket.id; old.nick = nick; }
+    else r.set(cid, { nick, muted: !!d?.muted, sid: socket.id, timer: null });
+    socket.data.code = code; socket.data.cid = cid;
+    socket.join('r:' + code);
+    const peers = [...r].filter(([id]) => id !== cid).map(([id, v]) => ({ id, nick: v.nick, muted: v.muted }));
+    ack({ ok: true, rejoin: !!old, peers, ice: iceFor('room-' + cid) });
+    socket.to('r:' + code).emit(old ? 'peer-update' : 'peer-join', { id: cid, nick, muted: r.get(cid).muted });
+  });
+  socket.on('signal', (d) => {
+    const { code, cid } = socket.data;
+    const r = code && rooms.get(code);
+    const t = r && r.get(String(d?.to || ''));
+    if (t && r.has(cid)) nsp.to(t.sid).emit('signal', { from: cid, data: d.data });
+  });
+  socket.on('mute', (m) => {
+    const { code, cid } = socket.data;
+    const e = code && rooms.get(code)?.get(cid);
+    if (!e) return;
+    e.muted = !!m;
+    socket.to('r:' + code).emit('peer-update', { id: cid, nick: e.nick, muted: e.muted });
+  });
+  socket.on('leave', () => {
+    const { code, cid } = socket.data;
+    if (code) roomLeave(code, cid);
+    socket.leave('r:' + code);
+    socket.data.code = null;
+  });
+  socket.on('disconnect', () => {
+    const { code, cid } = socket.data;
+    const e = code && rooms.get(code)?.get(cid);
+    if (!e || e.sid !== socket.id) return;
+    e.timer = setTimeout(() => roomLeave(code, cid), ROOM_GRACE);
+  });
+});
+
 server.listen(PORT, HOST, () => console.log(`КЕНТОФОН запущен: ${HOST}:${PORT}` + (TURN_HOST ? `, TURN ${TURN_HOST}:${TURN_PORT}` : '')));
